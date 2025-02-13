@@ -1,0 +1,4 @@
+data/instance.db
+data/admin_lock.pkl
+modules/__pycache__/
+docs/
