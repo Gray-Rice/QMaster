@@ -45,7 +45,14 @@ def login():
         else:
             error = "Invalid username or password."
 
-    return render_template('login`.html', error=error)
+    return render_template('login.html', error=error)
+
+@app.route("/register")
+def register():
+    if request.method == "POST":
+        # function add
+        print("Register in")
+    return render_template("register.html")
 
 # Protected Routes
 @app.route('/admin/dashboard')

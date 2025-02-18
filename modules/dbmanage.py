@@ -20,7 +20,7 @@ def setup_check():
         return False
 
 def create_instance():
-    setup = {"dbstat":False,"admin":"admin","instDate":date.today() }
+    setup = {"dbstat":False,"admin@qm.com":"admin","instDate":date.today() }
     try:
         with sqlite3.connect("data/instance.db") as conn:
             with open("data/dbschema.sql", "r") as f:
@@ -29,7 +29,7 @@ def create_instance():
                 setup["dbstat"] = True
                 cursor = conn.cursor()
                 # Implement setting alternate password through command line or env
-                cursor.execute(f'''INSERT INTO Users VALUES (0,'admin', '{hashpwd("admin")}', 'admin')''')
+                cursor.execute(f'''INSERT INTO Users VALUES (0,'admin@qm.com', '{hashpwd("admin")}', 'admin')''')
                 conn.commit()
                 print("Admin added with defaults.")
             with open("data/admin_lock.pkl","wb") as lock:
@@ -54,14 +54,17 @@ def add_user(username,password):
             cursor = conn.cursor()
             cursor.execute(f'''INSERT INTO Users (username, password) VALUES ('{username}', '{password}')''')
             conn.commit()
-            print("User added.")
+            return (f"User {username} added.")
         except sqlite3.IntegrityError :
-            print("User already exists")
+            return (f"User {username} already exists")
 
-def search_user(username):
+def search_user(username=None,id=None):
     with sqlite3.connect("data/instance.db") as conn:
         cursor = conn.cursor()
-        cursor.execute("SELECT id, username, password, role FROM Users WHERE username = ?",(username,))
+        if(username not in (None,"")):
+            cursor.execute("SELECT id, username, password, role FROM Users WHERE username = ?",(username,))
+        elif(id != None):
+            cursor.execute("SELECT id, username, password, role FROM Users WHERE id = ?",(id,))
         user = cursor.fetchone()
         if user:
             print(f"User found: ID={user[0]}, Username={user[1]}")
