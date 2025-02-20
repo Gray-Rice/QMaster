@@ -11,5 +11,6 @@ def verify_login(username,enteredpwd):
     user = search_user(username)
     if  user != None:
         if verify_hash(enteredpwd,user["password"]):
-            return True
-    return False
+            return (True,)
+        return (False,"pwd")
+    return (False,"usr")

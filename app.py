@@ -33,27 +33,41 @@ def home():
 def login():
     error = None
     if request.method == 'POST':
-        username = request.form.get('username')
-        password = request.form.get('password')
+        username = request.form.get('username').strip()
+        password = request.form.get('password').strip()
 
-        if verify_login(username, password):
+        valid = verify_login(username, password)
+        if valid[0]:
             user = load_user(username)
             login_user(user) #actuall login
             if (user.role == "admin"):
                 return redirect("/admin/dashboard")
             return redirect(url_for('user_dashboard'))
         else:
-            error = "Invalid username or password."
+            if(valid[1] == "usr"):
+                error = "Usernaem does not exist"
+            else:
+                error = "Wrong Password."
 
     return render_template('login.html', error=error)
 
 @app.route("/register",methods=["POST","GET"])
 def register():
     if request.method == "POST":
+        # AJAX with json for admin
+        if request.content_type == 'application/json':
+            data = request.json
+            username = data.get('username')
+            password = data.get('password')
+            dbm.add_user(username, password)
+            return jsonify({"message": "Registration successful!"})
+
+        # POST response
         username = request.form.get('username')
         password = request.form.get('password')
-        dbm.add_user(username,password)
-        return redirect("/user/dashboard")
+        dbm.add_user(username, password)
+        flash("User Added Succesfully.","info")
+        return redirect("/login")
     return render_template("register.html")
 
 # Protected Routes
@@ -75,7 +89,7 @@ def user_dashboard():
 def logout():
     logout_user()
     flash("Logout successful.","info")
-    return redirect(url_for('login'))
+    return redirect("/login")
 
 if __name__ == '__main__':
     dbm.start_checkup()

@@ -50,7 +50,8 @@ def start_checkup():
 def add_user(username,password):
     with sqlite3.connect("data/instance.db") as conn:
         try:
-            password = hashpwd(password)
+            username = username.strip()
+            password = hashpwd(password.strip())
             cursor = conn.cursor()
             cursor.execute(f'''INSERT INTO Users (username, password) VALUES ('{username}', '{password}')''')
             conn.commit()
