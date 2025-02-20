@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template, redirect, url_for
+from flask import Flask, request, render_template, redirect, url_for, flash
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 
 # User-defined modules
@@ -15,13 +15,14 @@ login_manager.login_view = "login"
 # User class required for Flask Login (UserMixin is helper function)
 # load_user creates User object, gives session identitity kinda
 class User(UserMixin):
-    def __init__(self, username):
+    def __init__(self, username,role):
         self.id = username 
-        self.role = "user"
+        self.role = role
 
 @login_manager.user_loader
 def load_user(username):
-    return User(username)
+    role = dbm.get_role(username)
+    return User(username,role)
 
 # Routes
 @app.route("/", methods=["GET"])
@@ -38,8 +39,7 @@ def login():
         if verify_login(username, password):
             user = load_user(username)
             login_user(user) #actuall login
-            if(username == "admin"):
-                user.role = "admin"
+            if (user.role == "admin"):
                 return redirect("/admin/dashboard")
             return redirect(url_for('user_dashboard'))
         else:
@@ -47,28 +47,34 @@ def login():
 
     return render_template('login.html', error=error)
 
-@app.route("/register")
+@app.route("/register",methods=["POST","GET"])
 def register():
     if request.method == "POST":
-        # function add
-        print("Register in")
+        username = request.form.get('username')
+        password = request.form.get('password')
+        dbm.add_user(username,password)
+        return redirect("/user/dashboard")
     return render_template("register.html")
 
 # Protected Routes
+@app.route('/admin')
 @app.route('/admin/dashboard')
 @login_required  
 def admin_dashboard():
-    return f"Welcome, {current_user.id}! <a href='/logout'>Logout</a>"
+    if(current_user.role != "admin"):
+        return "Error unauthorised"
+    return render_template("admin_dashboard.html")
 
 @app.route('/user/dashboard')
 @login_required  
 def user_dashboard():
-    return f"Welcome, {current_user.id}! <a href='/logout'>Logout</a>"
+    return render_template("user_dashboard.html")
 
 @app.route('/logout')
 @login_required
 def logout():
     logout_user()
+    flash("Logout successful.","info")
     return redirect(url_for('login'))
 
 if __name__ == '__main__':

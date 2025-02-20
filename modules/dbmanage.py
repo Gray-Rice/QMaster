@@ -88,3 +88,10 @@ def rm_user(username):
         cursor.execute("DELETE FROM Users WHERE username = ?", (username,))
         conn.commit()
         print(f"User '{username}' deleted successfully.")
+
+def get_role(username):
+    with sqlite3.connect("data/instance.db") as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT role FROM Users WHERE username = ?",(username,))
+        user = cursor.fetchone()
+        return user[0]
