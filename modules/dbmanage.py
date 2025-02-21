@@ -29,7 +29,7 @@ def create_instance():
                 setup["dbstat"] = True
                 cursor = conn.cursor()
                 # Implement setting alternate password through command line or env
-                cursor.execute(f'''INSERT INTO Users VALUES (0,'admin@qm.com', '{hashpwd("admin")}', 'admin')''')
+                cursor.execute(f'''INSERT INTO Users VALUES (0,'admin@qm.com', '{hashpwd("admin")}', 'admin','admin','2005-1-1','admin')''')
                 conn.commit()
                 print("Admin added with defaults.")
             with open("data/admin_lock.pkl","wb") as lock:
@@ -47,17 +47,17 @@ def start_checkup():
     else:
         print("Instance exists proceeding")
 
-def add_user(username,password):
+def add_user(user):
     with sqlite3.connect("data/instance.db") as conn:
         try:
-            username = username.strip()
-            password = hashpwd(password.strip())
+            user[0] = user[0].strip()
+            user[1] = hashpwd(user[1].strip())
             cursor = conn.cursor()
-            cursor.execute(f'''INSERT INTO Users (username, password) VALUES ('{username}', '{password}')''')
+            cursor.execute(f'''INSERT INTO Users (username, password, fullname, qualification, dob) VALUES (?,?,?,?,?)''',user)
             conn.commit()
-            return (f"User {username} added.")
+            return True
         except sqlite3.IntegrityError :
-            return (f"User {username} already exists")
+            return False
 
 def search_user(username=None,id=None):
     with sqlite3.connect("data/instance.db") as conn:

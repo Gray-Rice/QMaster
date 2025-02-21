@@ -5,6 +5,9 @@ CREATE TABLE IF NOT EXISTS Users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     username TEXT NOT NULL UNIQUE,
     password TEXT NOT NULL,
+    fullname TEXT NOT NULL,
+    qualification TEXT,
+    dob DATE NOT NULL,
     role TEXT CHECK(role IN ('admin', 'user')) NOT NULL DEFAULT 'user' 
 );
 

@@ -45,7 +45,7 @@ def login():
             return redirect(url_for('user_dashboard'))
         else:
             if(valid[1] == "usr"):
-                error = "Usernaem does not exist"
+                error = "Username does not exist"
             else:
                 error = "Wrong Password."
 
@@ -53,22 +53,40 @@ def login():
 
 @app.route("/register",methods=["POST","GET"])
 def register():
+    message = None
     if request.method == "POST":
+        user_data = []
         # AJAX with json for admin
         if request.content_type == 'application/json':
             data = request.json
-            username = data.get('username')
-            password = data.get('password')
-            dbm.add_user(username, password)
-            return jsonify({"message": "Registration successful!"})
+            user_data = [
+                data.get('username'),
+                data.get('password'),
+                data.get('fullname'),
+                data.get('qualification'),
+                data.get('dob')
+            ]
+            status = dbm.add_user(user_data)
+            return jsonify({"status": status})
 
         # POST response
-        username = request.form.get('username')
-        password = request.form.get('password')
-        dbm.add_user(username, password)
-        flash("User Added Succesfully.","info")
-        return redirect("/login")
-    return render_template("register.html")
+        user_data.append(request.form.get('username'))
+        user_data.append(request.form.get('password'))
+        user_data = [
+            request.form.get('username'),
+            request.form.get('password'),
+            request.form.get('fullname'),
+            request.form.get('qualification'),
+            request.form.get('dob')
+        ]
+        status = dbm.add_user(user_data)
+        if(status):
+            flash("User added sucessfully","info")
+            return redirect("/login")
+        else:
+            message="User already exists."
+            render_template("register.html",message=message)
+    return render_template("register.html",message=message)
 
 # Protected Routes
 @app.route('/admin')
