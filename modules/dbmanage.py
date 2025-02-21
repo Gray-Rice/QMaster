@@ -96,3 +96,67 @@ def get_role(username):
         cursor.execute("SELECT role FROM Users WHERE username = ?",(username,))
         user = cursor.fetchone()
         return user[0]
+
+def add_subject(sub_data):
+    with sqlite3.connect("data/instance.db") as conn:
+        try:
+            cursor = conn.cursor()
+            cursor.execute(f'''INSERT INTO Subject (name, description) VALUES (?,?)''',sub_data)
+            conn.commit()
+            return True
+        except sqlite3.IntegrityError :
+            return False
+
+def get_subjects():
+    with sqlite3.connect("data/instance.db") as conn:
+        cursor = conn.cursor()
+        cursor.execute(f'''SELECT * from Subject''')
+        subjects = cursor.fetchall()
+        return subjects
+
+def rm_subject(sub_id):
+    with sqlite3.connect("data/instance.db") as conn:
+        cursor = conn.cursor()
+        cursor.execute("PRAGMA foreign_keys = ON;") # To enable cascading on delete
+        # Delete
+        cursor.execute("DELETE FROM Subject WHERE id = ?", (sub_id,))
+        conn.commit()
+        print(f"Subject '{sub_id}' deleted successfully.")
+
+def add_chapter(chap_data):
+    with sqlite3.connect("data/instance.db") as conn:
+        cursor = conn.cursor()
+        cursor.execute('''INSERT INTO Chapter (subject_id, name, description) VALUES (?,?,?)''',chap_data)
+        conn.commit()
+        return True
+
+def get_chapters():
+    with sqlite3.connect("data/instance.db") as conn:
+        cursor = conn.cursor()
+        cursor.execute(f'''SELECT * from Chapter''')
+        chapters = cursor.fetchall()
+        return chapters
+
+def rm_chapter(chap_id):
+    with sqlite3.connect("data/instance.db") as conn:
+        cursor = conn.cursor()
+        cursor.execute("PRAGMA foreign_keys = ON;") # To enable cascading on delete
+        # Delete
+        cursor.execute("DELETE FROM Chapter WHERE id = ?", (chap_id,))
+        conn.commit()
+        print(f"Chapter '{chap_id}' deleted successfully.")
+
+def add_quiz(quiz_data):
+    with sqlite3.connect("data/instance.db") as conn:
+        cursor = conn.cursor()
+        cursor.execute('''INSERT INTO Quiz (chapter_id,quiz_date,duration,description) VALUES (?,?,?,?)''',quiz_data)
+        conn.commit()
+        print("Quiz Added")
+
+def add_questions(questions):
+    with sqlite3.connect("data/instance.db") as conn:
+        cursor = conn.cursor()
+        for q in questions:
+            cursor.execute('''INSERT INTO Question (quiz_id, qstatement, opt1,opt2,opt3,opt4,copt) VALUES (?,?,?,?,?,?,?)''',q)
+        conn.commit()
+        print("Questions added")

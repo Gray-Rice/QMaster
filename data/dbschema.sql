@@ -1,5 +1,7 @@
 -- Databse schema, use on new instance creation
 
+PRAGMA foreign_keys = ON;
+
 CREATE TABLE IF NOT EXISTS Users (
     -- id and role are not necessary to insert everytime
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -28,21 +30,21 @@ CREATE TABLE IF NOT EXISTS Chapter (
 CREATE TABLE IF NOT EXISTS Quiz (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     chapter_id INTEGER NOT NULL,
-    date_of_quiz DATE NOT NULL,
-    time_duration TEXT NOT NULL, -- this is HH:MM
-    remarks TEXT,
+    quiz_date DATE NOT NULL,
+    duration TEXT NOT NULL, -- this is HH:MM
+    description TEXT,
     FOREIGN KEY (chapter_id) REFERENCES Chapter(id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS Question (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     quiz_id INTEGER NOT NULL,
-    question_statement TEXT NOT NULL,
-    option1 TEXT NOT NULL,
-    option2 TEXT NOT NULL,
-    option3 TEXT,
-    option4 TEXT,
-    correct_option INTEGER NOT NULL, -- store as int 1-4
+    qstatement TEXT NOT NULL,
+    opt1 TEXT NOT NULL,
+    opt2 TEXT NOT NULL,
+    opt3 TEXT,
+    opt4 TEXT,
+    copt INTEGER NOT NULL, -- store as int 1-4
     FOREIGN KEY (quiz_id) REFERENCES Quiz(id) ON DELETE CASCADE
 );
 
