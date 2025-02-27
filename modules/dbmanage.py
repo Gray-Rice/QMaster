@@ -48,6 +48,7 @@ def start_checkup():
         print("Instance exists proceeding")
 
 def add_user(user):
+    # Format = list username,password,fname,qual,dob
     with sqlite3.connect("data/instance.db") as conn:
         try:
             user[0] = user[0].strip()
@@ -97,66 +98,134 @@ def get_role(username):
         user = cursor.fetchone()
         return user[0]
 
-def add_subject(sub_data):
-    with sqlite3.connect("data/instance.db") as conn:
-        try:
+class subject:
+    def add(sub_data):
+        with sqlite3.connect("data/instance.db") as conn:
+            try:
+                cursor = conn.cursor()
+                cursor.execute(f'''INSERT INTO Subject (name, description) VALUES (?,?)''',sub_data)
+                conn.commit()
+                return True
+            except sqlite3.IntegrityError :
+                return False
+
+    def get(user_id = None):
+        with sqlite3.connect("data/instance.db") as conn:
             cursor = conn.cursor()
-            cursor.execute(f'''INSERT INTO Subject (name, description) VALUES (?,?)''',sub_data)
+            if(user_id == None):
+                cursor.execute(f'''SELECT * from Subject''')
+            else:
+                cursor.exeute(f'''SELECT  s.id,s.name,s.description
+                                    FROM Subject s,Enrolled e
+                                    WHERE e.subject_id = s.id AND e.user_id = ?;''',(user_id,))
+            subjects = cursor.fetchall()
+            return subjects
+
+    def remove(sub_id):
+        with sqlite3.connect("data/instance.db") as conn:
+            cursor = conn.cursor()
+            cursor.execute("PRAGMA foreign_keys = ON;") # To enable cascading on delete
+            # Delete
+            cursor.execute("DELETE FROM Subject WHERE id = ?", (sub_id,))
             conn.commit()
-            return True
-        except sqlite3.IntegrityError :
-            return False
+            print(f"Subject '{sub_id}' deleted successfully.")
 
-def get_subjects():
-    with sqlite3.connect("data/instance.db") as conn:
-        cursor = conn.cursor()
-        cursor.execute(f'''SELECT * from Subject''')
-        subjects = cursor.fetchall()
-        return subjects
+# Chapter
+class chapter:
+    def add(chap_data):
+        with sqlite3.connect("data/instance.db") as conn:
+            try:
+                cursor = conn.cursor()
+                cursor.execute('''INSERT INTO Chapter (subject_id, name, description) VALUES (?,?,?)''',chap_data)
+                conn.commit()
+                return True
+            except sqlite3.IntegrityError :
+                return False
 
-def rm_subject(sub_id):
-    with sqlite3.connect("data/instance.db") as conn:
-        cursor = conn.cursor()
-        cursor.execute("PRAGMA foreign_keys = ON;") # To enable cascading on delete
-        # Delete
-        cursor.execute("DELETE FROM Subject WHERE id = ?", (sub_id,))
-        conn.commit()
-        print(f"Subject '{sub_id}' deleted successfully.")
+    def get():
+        with sqlite3.connect("data/instance.db") as conn:
+            cursor = conn.cursor()
+            cursor.execute(f'''SELECT * from Chapter''')
+            chapters = cursor.fetchall()
+            return chapters
 
-def add_chapter(chap_data):
-    with sqlite3.connect("data/instance.db") as conn:
-        cursor = conn.cursor()
-        cursor.execute('''INSERT INTO Chapter (subject_id, name, description) VALUES (?,?,?)''',chap_data)
-        conn.commit()
-        return True
+    def remove(chap_id):
+        with sqlite3.connect("data/instance.db") as conn:
+            cursor = conn.cursor()
+            cursor.execute("PRAGMA foreign_keys = ON;") # To enable cascading on delete
+            # Delete
+            cursor.execute("DELETE FROM Chapter WHERE id = ?", (chap_id,))
+            conn.commit()
+            print(f"Chapter '{chap_id}' deleted successfully.")
 
-def get_chapters():
-    with sqlite3.connect("data/instance.db") as conn:
-        cursor = conn.cursor()
-        cursor.execute(f'''SELECT * from Chapter''')
-        chapters = cursor.fetchall()
-        return chapters
+# Quiz
+class quiz:
+    def add(quiz_data):
+        with sqlite3.connect("data/instance.db") as conn:
+            cursor = conn.cursor()
+            cursor.execute('''INSERT INTO Quiz (chapter_id,quiz_date,duration,description) VALUES (?,?,?,?)''',quiz_data)
+            conn.commit()
+            print("Quiz Added")
 
-def rm_chapter(chap_id):
-    with sqlite3.connect("data/instance.db") as conn:
-        cursor = conn.cursor()
-        cursor.execute("PRAGMA foreign_keys = ON;") # To enable cascading on delete
-        # Delete
-        cursor.execute("DELETE FROM Chapter WHERE id = ?", (chap_id,))
-        conn.commit()
-        print(f"Chapter '{chap_id}' deleted successfully.")
+    def get(chapter_id):
+        with sqlite3.connect("data/instance.db") as conn:
+            cursor = conn.cursor()
+            cursor.execute(f'''SELECT * FROM Quiz WHERE chapter_id = ?''',(chapter_id,))
+            quizes = cursor.fetchall()
+            return quizes
 
-def add_quiz(quiz_data):
-    with sqlite3.connect("data/instance.db") as conn:
-        cursor = conn.cursor()
-        cursor.execute('''INSERT INTO Quiz (chapter_id,quiz_date,duration,description) VALUES (?,?,?,?)''',quiz_data)
-        conn.commit()
-        print("Quiz Added")
+    def remove(quiz_id):
+        with sqlite3.connect("data/instance.db") as conn:
+            cursor = conn.cursor()
+            cursor.execute("PRAGMA foreign_keys = ON;") # To enable cascading on delete
+            # Delete
+            cursor.execute("DELETE FROM Quiz WHERE id = ?", (quiz_id,))
+            conn.commit()
+            print(f"Quiz '{quiz_id}' deleted successfully.")
 
-def add_questions(questions):
-    with sqlite3.connect("data/instance.db") as conn:
-        cursor = conn.cursor()
-        for q in questions:
-            cursor.execute('''INSERT INTO Question (quiz_id, qstatement, opt1,opt2,opt3,opt4,copt) VALUES (?,?,?,?,?,?,?)''',q)
-        conn.commit()
-        print("Questions added")
+#  Questions
+class questions:
+    def add(questions):
+        with sqlite3.connect("data/instance.db") as conn:
+            cursor = conn.cursor()
+            for q in questions:
+                cursor.execute('''INSERT INTO Question (quiz_id, qstatement, opt1,opt2,opt3,opt4,copt) VALUES (?,?,?,?,?,?,?)''',q)
+            conn.commit()
+            print("Questions added")
+
+    def get(quiz_id):
+        with sqlite3.connect("data/instance.db") as conn:
+            cursor = conn.cursor()
+            cursor.execute(f'''SELECT * FROM Question WHERE quiz_id = ?''',(quiz_id,))
+            questions = cursor.fetchall()
+            return questions
+    def remove(qid):
+        with sqlite3.connect("data/instance.db") as conn:
+            cursor = conn.cursor()
+            cursor.execute("PRAGMA foreign_keys = ON;") # To enable cascading on delete
+            # Delete
+            cursor.execute("DELETE FROM Question WHERE id = ?", (qid,))
+            conn.commit()
+            print(f"Question '{qid}' deleted successfully.")
+
+# Scores
+class score:
+    def add(score_data):
+        with sqlite3.connect("data/instance.db") as conn:
+            try:
+                cursor = conn.cursor()
+                cursor.execute(f'''INSERT INTO Score (quiz_id, user_id, time_stamp, total_score) VALUES (?,?,?,?)''',score_data)
+                conn.commit()
+                return True
+            except sqlite3.IntegrityError :
+                return False
+
+    def get(user_id=None,quiz_id=None):
+        with sqlite3.connect("data/instance.db") as conn:
+            cursor = conn.cursor()
+            if( user_id == None and quiz_id != None):
+                cursor.execute(f'''SELECT * FROM Score WHERE quiz_id = ?''',(quiz_id,))
+            elif( user_id != None and quiz_id == None):
+                cursor.execute(f'''SELECT * FROM Score WHERE user_id = ?''',(user_id,))
+            scores = cursor.fetchall()
+            return scores
