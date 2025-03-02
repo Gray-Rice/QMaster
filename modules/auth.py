@@ -10,7 +10,8 @@ def verify_login(username,enteredpwd):
     from modules.dbmanage import search_user
     user = search_user(username)
     if  user != None:
-        if verify_hash(enteredpwd,user["password"]):
-            return (True,)
+        if verify_hash(enteredpwd,user["pwd"]):
+            del user["pwd"]
+            return (True,user)
         return (False,"pwd")
     return (False,"usr")

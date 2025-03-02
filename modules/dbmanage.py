@@ -64,13 +64,13 @@ def search_user(username=None,id=None):
     with sqlite3.connect("data/instance.db") as conn:
         cursor = conn.cursor()
         if(username not in (None,"")):
-            cursor.execute("SELECT id, username, password, role FROM Users WHERE username = ?",(username,))
+            cursor.execute("SELECT id, username, password, fullname, qualification, dob, role FROM Users WHERE username = ?",(username,))
         elif(id != None):
-            cursor.execute("SELECT id, username, password, role FROM Users WHERE id = ?",(id,))
+            cursor.execute("SELECT id, username, password, fullname, qualification, dob, role FROM Users WHERE id = ?",(id,))
         user = cursor.fetchone()
         if user:
             print(f"User found: ID={user[0]}, Username={user[1]}")
-            return {"id": user[0],"username": user[1],"password":user[2],"role": user[3] }
+            return {"id": user[0],"username": user[1],"pwd":user[2],"fname":user[3],"qual":user[4],"dob":user[5],"role": user[6] }
         else:
             print("User not found.")
             return None
@@ -99,17 +99,17 @@ def get_role(username):
         return user[0]
 
 class subject:
-    def add(sub_data):
+    def add(self,sub_data):
         with sqlite3.connect("data/instance.db") as conn:
             try:
                 cursor = conn.cursor()
-                cursor.execute(f'''INSERT INTO Subject (name, description) VALUES (?,?)''',sub_data)
+                cursor.execute(f'''INSERT INTO Subject (code,name, description) VALUES (?,?,?)''',sub_data)
                 conn.commit()
                 return True
             except sqlite3.IntegrityError :
                 return False
 
-    def get(user_id = None):
+    def get(self,user_id = None):
         with sqlite3.connect("data/instance.db") as conn:
             cursor = conn.cursor()
             if(user_id == None):
@@ -121,7 +121,7 @@ class subject:
             subjects = cursor.fetchall()
             return subjects
 
-    def remove(sub_id):
+    def remove(self,sub_id):
         with sqlite3.connect("data/instance.db") as conn:
             cursor = conn.cursor()
             cursor.execute("PRAGMA foreign_keys = ON;") # To enable cascading on delete
@@ -132,7 +132,7 @@ class subject:
 
 # Chapter
 class chapter:
-    def add(chap_data):
+    def add(self,chap_data):
         with sqlite3.connect("data/instance.db") as conn:
             try:
                 cursor = conn.cursor()
@@ -142,14 +142,14 @@ class chapter:
             except sqlite3.IntegrityError :
                 return False
 
-    def get():
+    def get(self):
         with sqlite3.connect("data/instance.db") as conn:
             cursor = conn.cursor()
             cursor.execute(f'''SELECT * from Chapter''')
             chapters = cursor.fetchall()
             return chapters
 
-    def remove(chap_id):
+    def remove(self,chap_id):
         with sqlite3.connect("data/instance.db") as conn:
             cursor = conn.cursor()
             cursor.execute("PRAGMA foreign_keys = ON;") # To enable cascading on delete
@@ -160,21 +160,21 @@ class chapter:
 
 # Quiz
 class quiz:
-    def add(quiz_data):
+    def add(self,quiz_data):
         with sqlite3.connect("data/instance.db") as conn:
             cursor = conn.cursor()
             cursor.execute('''INSERT INTO Quiz (chapter_id,quiz_date,duration,description) VALUES (?,?,?,?)''',quiz_data)
             conn.commit()
             print("Quiz Added")
 
-    def get(chapter_id):
+    def get(self,chapter_id):
         with sqlite3.connect("data/instance.db") as conn:
             cursor = conn.cursor()
             cursor.execute(f'''SELECT * FROM Quiz WHERE chapter_id = ?''',(chapter_id,))
             quizes = cursor.fetchall()
             return quizes
 
-    def remove(quiz_id):
+    def remove(self,quiz_id):
         with sqlite3.connect("data/instance.db") as conn:
             cursor = conn.cursor()
             cursor.execute("PRAGMA foreign_keys = ON;") # To enable cascading on delete
@@ -185,7 +185,7 @@ class quiz:
 
 #  Questions
 class questions:
-    def add(questions):
+    def add(self,questions):
         with sqlite3.connect("data/instance.db") as conn:
             cursor = conn.cursor()
             for q in questions:
@@ -193,13 +193,13 @@ class questions:
             conn.commit()
             print("Questions added")
 
-    def get(quiz_id):
+    def get(self,quiz_id):
         with sqlite3.connect("data/instance.db") as conn:
             cursor = conn.cursor()
             cursor.execute(f'''SELECT * FROM Question WHERE quiz_id = ?''',(quiz_id,))
             questions = cursor.fetchall()
             return questions
-    def remove(qid):
+    def remove(self,qid):
         with sqlite3.connect("data/instance.db") as conn:
             cursor = conn.cursor()
             cursor.execute("PRAGMA foreign_keys = ON;") # To enable cascading on delete
@@ -210,7 +210,7 @@ class questions:
 
 # Scores
 class score:
-    def add(score_data):
+    def add(self,score_data):
         with sqlite3.connect("data/instance.db") as conn:
             try:
                 cursor = conn.cursor()
@@ -220,7 +220,7 @@ class score:
             except sqlite3.IntegrityError :
                 return False
 
-    def get(user_id=None,quiz_id=None):
+    def get(self,user_id=None,quiz_id=None):
         with sqlite3.connect("data/instance.db") as conn:
             cursor = conn.cursor()
             if( user_id == None and quiz_id != None):

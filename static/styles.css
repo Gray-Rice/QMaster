@@ -2,7 +2,18 @@ body{
     background-image: url('/static/images/bg.png');
     background-size: cover;
     background-position: center;
+    background-attachment: fixed;
     height: 100vh;
+}
+
+.blur{
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    backdrop-filter: blur(5px);
+    z-index: -1;
 }
 
 form{
@@ -11,4 +22,19 @@ form{
     padding-left: 20px;
     /* padding-bottom: 10%; */
     min-width: 40vh;
+}
+
+.submit-btn {
+    background-color: #3b4f61 !important; 
+    color: white !important;
+}
+
+summary {
+    font-size: 18px;
+    font-weight: bold;
+    color: #3b4f61;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    outline: none;
 }
