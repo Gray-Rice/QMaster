@@ -175,12 +175,25 @@ class chapter:
 
     def remove(self,chap_id):
         with sqlite3.connect("data/instance.db") as conn:
+            try:
+                cursor = conn.cursor()
+                cursor.execute("PRAGMA foreign_keys = ON;") # To enable cascading on delete
+                cursor.execute("DELETE FROM Chapter WHERE id = ?", (chap_id,))
+                conn.commit()
+                print(f"Chapter '{chap_id}' deleted successfully.")
+                return True
+            except Exception:
+                return False
+    
+    def update(self,up_data):
+        with sqlite3.connect("data/instance.db") as conn:
             cursor = conn.cursor()
-            cursor.execute("PRAGMA foreign_keys = ON;") # To enable cascading on delete
-            # Delete
-            cursor.execute("DELETE FROM Chapter WHERE id = ?", (chap_id,))
-            conn.commit()
-            print(f"Chapter '{chap_id}' deleted successfully.")
+            try:
+                conn.execute("UPDATE Chapter SET name = ?, description = ? WHERE id = ?",up_data)
+                conn.commit()
+                return True
+            except Exception:
+                return False
 
 # Quiz
 class quiz:

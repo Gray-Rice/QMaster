@@ -39,16 +39,7 @@
             <h3 class="mt-4" style="margin: auto;" >Add Quiz</h3>
             <div class="mt-3">
                 <form id="quizform" hx-post="/get/addquiz" hx-target="#quizform" hx-swap="outerHTML">
-                    <select class="form-control" name="sub_id">
-                        {% if sublist %}
-                            <option value="" disabled selected>Select subject to Load</option>
-                            {% for i in sublist %}
-                                <option value="{{ i[0] }}">{{ i[1] }} - {{ i[2] }}</option>
-                            {% endfor %}
-                        {% else %}
-                            <option value="" disabled>No subjects available</option>
-                        {% endif %}
-                    </select>
+                    {% include 'extra/subjects.html' %} 
                     <button class="mt-3 mb-3 btn" style="background-color: #3b4f61;color: white;" type="submit">Fetch Form</button>
                 </form>
             </div>

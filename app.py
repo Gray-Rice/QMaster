@@ -115,7 +115,7 @@ def admin_dashboard():
 def admin_user():
     if(current_user.role != "admin"):
         return "Error unauthorised"
-    return render_template("admin_user.html",user="Admin",userlist=dbm.get_users())
+    return render_template("admin_user.html",user="Admin",userlist=uobj.get())
 
 @app.route('/admin/dashboard/subject')
 @login_required  
@@ -123,13 +123,6 @@ def admin_subject():
     if(current_user.role != "admin"):
         return "Error unauthorised"
     return render_template("admin_subject.html",user="Admin",sublist=sub.get())
-
-@app.route('/admin/dashboard/chapter')
-@login_required  
-def admin_chapter():
-    if(current_user.role != "admin"):
-        return "Error unauthorised"
-    return render_template("admin_chapter.html",user="Admin",sublist=sub.get())
 
 @app.route('/admin/dashboard/quiz')
 @login_required  
@@ -188,6 +181,13 @@ def rm_subject():
     return redirect(url_for("admin_subject"))
 
 ############################################################ Chapter Path
+@app.route('/admin/dashboard/chapter')
+@login_required  
+def admin_chapter():
+    if(current_user.role != "admin"):
+        return "Error unauthorised"
+    return render_template("admin_chapter.html",user="Admin",sublist=sub.get())
+
 @app.route("/addchapter",methods=["POST"])
 @login_required
 def add_chapter():
@@ -205,6 +205,40 @@ def add_chapter():
         message =  f"Chapter {chap_data[0]}:\"{chap_data[1]}\" already exists"
     flash(message,"info")
     return redirect("/admin/dashboard/chapter")
+
+@app.route("/edit/chapter", methods=["POST"])
+@login_required
+def edit_chapter():
+    up_data = [
+        request.form.get("name"),
+        request.form.get("description"),
+        request.form.get("chap_id")
+    ]
+    if(chap.update(up_data)):
+        flash(f"Chapter updated sucessfully","info")
+    else:
+        flash("Error try again","info")
+    return redirect(url_for("admin_chapter"))
+
+@app.route("/delete/chapter", methods=["POST"])
+@login_required
+def rm_chapter():
+    chap_id = request.form.get("chap_id")
+    if(chap.remove(chap_id)):
+        flash(f"Chapter deleted sucessfully","info")
+    else:
+        flash("Error try again","info")
+    return redirect(url_for("admin_chapter"))
+
+@app.route("/get/editchap",methods=["POST"])
+def get_editchap():
+    sub_id = request.form.get("sub_id")
+    return render_template("forms/editchap.html",chaplist=chap.get(sub_id))
+
+@app.route("/get/delchap",methods=["POST"])
+def get_delchap():
+    sub_id = request.form.get("sub_id")
+    return render_template("forms/delchap.html",chaplist=chap.get(sub_id))
 
 # Quiz path
 @app.route("/addquiz",methods=["POST"])
@@ -229,7 +263,7 @@ def add_quiz():
 @app.route("/get/addquiz",methods=["POST"])
 def get_addquiz():
     sub_id = request.form.get("sub_id")
-    return render_template("extra/addquiz.html",chaplist=chap.get(sub_id))
+    return render_template("forms/addquiz.html",chaplist=chap.get(sub_id))
 
 
 ############################################################ User Path

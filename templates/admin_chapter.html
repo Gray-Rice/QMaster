@@ -39,22 +39,34 @@
             <h3 class="mt-4" style="margin: auto;" >Add Chapter</h3>
             <div class="mt-3">
                 <form action="/addchapter" method="post">
-                    <select class="form-control" name="sub_id" id="subjectDropdown">
-                        {% if sublist %}
-                            <option value="" disabled selected>Select a subject</option>
-                            {% for i in sublist %}
-                                <option value="{{ i[0] }}">{{ i[1] }} - {{ i[2] }}</option>
-                            {% endfor %}
-                        {% else %}
-                            <option value="" disabled>No subjects available</option>
-                        {% endif %}
-                    </select>
+                    {% include 'extra/subjects.html' %} 
                     <input class="form-control mt-3" type="text" name="code" placeholder="Chapter Code" required>
                     <input class="form-control mt-3" type="text" name="chapter" placeholder="Chapter Name" required>
                     <input class="form-control mt-3" type="text" name="description" placeholder="Description" required>
                     <button class="submit-btn mt-3 mb-3 btn " type="submit">Add</button>
                 </form>
             </div>
+        </div>
+        <!-- Edit -->
+        <div class="card mb-4 shadow-lg rounded-4 d-flex" style="margin:auto; max-width: 80vw;">
+            <h3 class="mt-4" style="margin: auto;" >Edit Quiz</h3>
+            <div>
+                <form id="quizform" hx-post="/get/editchap" hx-target="#quizform" hx-swap="outerHTML">
+                    {% include 'extra/subjects.html' %} 
+                    <button class="mt-3 mb-3 btn" style="background-color: #3b4f61;color: white;" type="submit">Fetch Chapters</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="card mb-4 shadow-lg rounded-4 d-flex" style="margin:auto; max-width: 80vw;">
+            <h3 class="mt-4" style="margin: auto;" >Edit Quiz</h3>
+            <div id="del-form">
+                <form hx-post="/get/delchap" hx-target="#del-form" hx-swap="outerHTML">
+                    {% include 'extra/subjects.html' %} 
+                    <button class="mt-3 mb-3 btn" style="background-color: #3b4f61;color: white;" type="submit">Fetch Chapters</button>
+                </form>
+            </div>
+        </div>
         </div>
 </body>
 </html>

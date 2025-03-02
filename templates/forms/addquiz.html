@@ -1,14 +1,5 @@
 <form action="/addquiz" method="post">
-    <select class="form-control" name="chap_id">
-        <option value="" disabled selected>Select a chapter</option>
-        {% if chaplist %}
-            {% for i in chaplist %}
-                <option value="{{ i[0] }}">{{ i[1] }} - {{ i[2]}}</option>
-            {% endfor %}
-        {% else %}
-            <option value="" disabled>No chapter available</option>
-        {% endif %}
-    </select>
+    {% include 'extra/chapters.html' %} 
     <input class="form-control mt-3" type="text" name="name" placeholder="Quiz Name" required>
     <input class="form-control mt-3" type="text" name="description" placeholder="Description">
     <input class="form-control mt-3" type="date" name="doq" required>
