@@ -1,0 +1,10 @@
+<select class="form-control" name="subject" id="subjectDropdown">
+    {% if sublist %}
+        <option value="" disabled selected>Select a subject</option>
+        {% for subject in sublist %}
+            <option value="{{ subject[0] }}">{{ subject[1] }} - {{ subject[2] }}</option>
+        {% endfor %}
+    {% else %}
+        <option value="" disabled>No subjects available</option>
+    {% endif %}
+</select>

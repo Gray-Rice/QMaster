@@ -47,6 +47,7 @@ def start_checkup():
     else:
         print("Instance exists proceeding")
 
+
 def add_user(user):
     # Format = list username,password,fname,qual,dob
     with sqlite3.connect("data/instance.db") as conn:
@@ -59,6 +60,14 @@ def add_user(user):
             return True
         except sqlite3.IntegrityError :
             return False
+
+def get_users():
+    with sqlite3.connect("data/instance.db") as conn:
+            cursor = conn.cursor()
+            cursor.execute(f'''SELECT id,username,fullname,qualification,dob from Users''')
+            users = cursor.fetchall()
+            users.pop(0)
+            return users
 
 def search_user(username=None,id=None):
     with sqlite3.connect("data/instance.db") as conn:
@@ -136,16 +145,16 @@ class chapter:
         with sqlite3.connect("data/instance.db") as conn:
             try:
                 cursor = conn.cursor()
-                cursor.execute('''INSERT INTO Chapter (subject_id, name, description) VALUES (?,?,?)''',chap_data)
+                cursor.execute('''INSERT INTO Chapter (subject_id, chap_code, name, description) VALUES (?,?,?,?)''',chap_data)
                 conn.commit()
                 return True
             except sqlite3.IntegrityError :
                 return False
 
-    def get(self):
+    def get(self,sub_id):
         with sqlite3.connect("data/instance.db") as conn:
             cursor = conn.cursor()
-            cursor.execute(f'''SELECT * from Chapter''')
+            cursor.execute(f'''SELECT id,chap_code , name, description from Chapter WHERE subject_id = ?''',(sub_id,))
             chapters = cursor.fetchall()
             return chapters
 
@@ -162,10 +171,14 @@ class chapter:
 class quiz:
     def add(self,quiz_data):
         with sqlite3.connect("data/instance.db") as conn:
-            cursor = conn.cursor()
-            cursor.execute('''INSERT INTO Quiz (chapter_id,quiz_date,duration,description) VALUES (?,?,?,?)''',quiz_data)
-            conn.commit()
-            print("Quiz Added")
+            try :
+                cursor = conn.cursor()
+                cursor.execute('''INSERT INTO Quiz (chapter_id,name,quiz_date,duration,description) VALUES (?,?,?,?,?)''',quiz_data)
+                conn.commit()
+                print("Quiz Added")
+                return True
+            except Exception:
+                return False
 
     def get(self,chapter_id):
         with sqlite3.connect("data/instance.db") as conn:

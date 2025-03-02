@@ -32,6 +32,7 @@ CREATE TABLE IF NOT EXISTS Enrolled (
 CREATE TABLE IF NOT EXISTS Chapter (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     subject_id INTEGER NOT NULL,
+    chap_code TEXT NOT NULL UNIQUE,
     name TEXT NOT NULL,
     description TEXT,
     FOREIGN KEY (subject_id) REFERENCES Subject(id) ON DELETE CASCADE
@@ -40,6 +41,7 @@ CREATE TABLE IF NOT EXISTS Chapter (
 CREATE TABLE IF NOT EXISTS Quiz (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     chapter_id INTEGER NOT NULL,
+    name TEXT NOT NULL,
     quiz_date DATE NOT NULL,
     duration TEXT NOT NULL, -- this is HH:MM
     description TEXT,

@@ -38,3 +38,7 @@ summary {
     cursor: pointer;
     outline: none;
 }
+
+.response{
+    margin: auto !important;
+}

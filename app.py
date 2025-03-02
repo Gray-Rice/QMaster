@@ -5,7 +5,11 @@ from flask_login import LoginManager, UserMixin, login_user, login_required, log
 import modules.dbmanage as dbm
 from modules.auth import verify_login
 
-subjects = dbm.subject()
+sub = dbm.subject()
+chap = dbm.chapter()
+qz = dbm.quiz()
+qu = dbm.questions()
+sc = dbm.score()
 
 app = Flask(__name__)
 app.secret_key = "secret_key_add_method_to_replace_with_env"
@@ -84,15 +88,14 @@ def register():
         ]
         status = dbm.add_user(user_data)
         if(status):
+            if request.headers.get("HX-Request"):
+                return f"<p> User {user_data[0]} Added Succesfully </p>"
             flash("User added sucessfully","info")
-            if("admin" in referer):
-                return redirect('/admin/dashboard')
             return redirect("/login")
         else:
-            message="User already exists."
-            if("admin" in referer):
-                flash(message,"info")
-                return redirect('/admin/dashboard')
+            message= f"Username {user_data[0]} already exists."
+            if request.headers.get("HX-Request"):
+                return f"<p> {message} </p>"
             return render_template("register.html",message=message)
     return render_template("register.html",message=message)
 
@@ -101,13 +104,46 @@ def admin():
     return redirect("/admin/dashboard")
 
 # Protected Routes
-@app.route('/admin/dashboard')
+@app.route('/admin/dashboard/')
 @login_required  
 def admin_dashboard():
+    return render_template("admin_dashboard.html",user="Admin")
+
+@app.route('/admin/dashboard/user')
+@login_required  
+def admin_user():
     if(current_user.role != "admin"):
         return "Error unauthorised"
-    session["subjects"] = subjects.get()
-    return render_template("admin_dashboard.html",user="Admin",sublist=session["subjects"])
+    return render_template("admin_user.html",user="Admin",userlist=dbm.get_users())
+
+@app.route('/admin/dashboard/subject')
+@login_required  
+def admin_subject():
+    if(current_user.role != "admin"):
+        return "Error unauthorised"
+    return render_template("admin_subject.html",user="Admin",sublist=sub.get())
+
+@app.route('/admin/dashboard/chapter')
+@login_required  
+def admin_chapter():
+    if(current_user.role != "admin"):
+        return "Error unauthorised"
+    return render_template("admin_chapter.html",user="Admin",sublist=sub.get())
+
+@app.route('/admin/dashboard/quiz')
+@login_required  
+def admin_quiz():
+    if(current_user.role != "admin"):
+        return "Error unauthorised"
+    return render_template("admin_quiz.html",user="Admin",sublist=sub.get())
+
+@app.route('/admin/dashboard/quiz/questions')
+@login_required  
+def admin_question():
+    if(current_user.role != "admin"):
+        return "Error unauthorised"
+    return render_template("admin_quiz.html",user="Admin",sublist=sub.get())
+
 
 @app.route("/addsubject",methods=["POST"])
 @login_required
@@ -119,30 +155,54 @@ def add_subject():
         request.form.get('subject').strip(),
         request.form.get('description').strip(),
     ]
-    if(subjects.add(sub_data)):
-        message = f"{sub_data[0]}:\"{sub_data[1]}\" added successfully"
+    if(sub.add(sub_data)):
+        message =  f"{sub_data[0]}:\"{sub_data[1]}\" added successfully"
     else:
-        message = f"{sub_data[0]}:\"{sub_data[1]}\" already exists"
+        message =  f"{sub_data[0]}:\"{sub_data[1]}\" already exists"
     flash(message,"info")
-    return redirect("/admin")
+    return redirect("/admin/dashboard/add")
 
-@app.route("/addchapter",methods=["GET","POST"])
+@app.route("/addchapter",methods=["POST"])
 @login_required
 def add_chapter():
     if(current_user.role != "admin"):
         return "<p>Error unauthorised</p>"
-    if request.method == "POST":
-        sub_data = [
-            request.form.get('code').strip(),
-            request.form.get('subject').strip(),
-            request.form.get('description').strip(),
-        ]
-        if(subjects.add(sub_data)):
-            return f"<p> {sub_data[0]}:\"{sub_data[1]}\" added successfully </p>"
-        else:
-            return f"<p> {sub_data[0]}:\"{sub_data[1]}\" already exists</p>"
-    return "<p> Add Chapter interface <p>"
+    chap_data = [
+        request.form.get("sub_id"),
+        request.form.get('code').strip(),
+        request.form.get('chapter').strip(),
+        request.form.get('description').strip(),
+    ]
+    if(chap.add(chap_data)):
+        message =  f"Chapter {chap_data[0]}:\"{chap_data[1]}\" added successfully"
+    else:
+        message =  f"Chapter {chap_data[0]}:\"{chap_data[1]}\" already exists"
+    flash(message,"info")
+    return redirect("/admin/dashboard/add")
 
+@app.route("/addquiz",methods=["POST"])
+@login_required
+def add_quiz():
+    if(current_user.role != "admin"):
+        return "<p>Error unauthorised</p>"
+    quiz_data = [
+        request.form.get("chap_id").strip(),
+        request.form.get("name").strip(),
+        request.form.get('doq'),
+        request.form.get('duration'),
+        request.form.get('description').strip(),
+    ]
+    if(qz.add(quiz_data)):
+        message =  f"{quiz_data[0]}:\"{quiz_data[1]}\" added successfully"
+    else:
+        message =  f"{quiz_data[0]}:\"{quiz_data[1]}\" already exists"
+    flash(message,"info")
+    return redirect("/admin/dashboard/add")
+
+@app.route("/get/addquiz",methods=["POST"])
+def get_addquiz():
+    sub_id = request.form.get("sub_id")
+    return render_template("extra/addquiz.html",chaplist=chap.get(sub_id))
 
 @app.route('/user/dashboard')
 @login_required  
