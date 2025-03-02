@@ -5,6 +5,7 @@ from flask_login import LoginManager, UserMixin, login_user, login_required, log
 import modules.dbmanage as dbm
 from modules.auth import verify_login
 
+uobj = dbm.users()
 sub = dbm.subject()
 chap = dbm.chapter()
 qz = dbm.quiz()
@@ -18,8 +19,7 @@ app.secret_key = "secret_key_add_method_to_replace_with_env"
 login_manager = LoginManager(app)
 login_manager.login_view = "login"
 
-# User class required for Flask Login (UserMixin is helper function)
-# load_user creates User object, gives session identitity kinda
+# User class required for Flask Login (UserMixin is helper function), load_user creates User object, gives session identitity
 class User(UserMixin):
     def __init__(self, username,role):
         self.id = username 
@@ -78,7 +78,6 @@ def register():
             return jsonify({"status": status})
 
         # POST response
-        referer = request.headers.get("Referer", "")
         user_data = [
             request.form.get('username'),
             request.form.get('password'),
@@ -86,7 +85,7 @@ def register():
             request.form.get('qualification'),
             request.form.get('dob'),
         ]
-        status = dbm.add_user(user_data)
+        status = uobj.add(user_data)
         if(status):
             if request.headers.get("HX-Request"):
                 return f"<p> User {user_data[0]} Added Succesfully </p>"
@@ -103,7 +102,9 @@ def register():
 def admin():
     return redirect("/admin/dashboard")
 
-# Protected Routes
+################################################################### Protected Routes
+
+############################################################ Admin Paths
 @app.route('/admin/dashboard/')
 @login_required  
 def admin_dashboard():
@@ -144,7 +145,7 @@ def admin_question():
         return "Error unauthorised"
     return render_template("admin_quiz.html",user="Admin",sublist=sub.get())
 
-
+############################################################ Subject paths
 @app.route("/addsubject",methods=["POST"])
 @login_required
 def add_subject():
@@ -160,8 +161,33 @@ def add_subject():
     else:
         message =  f"{sub_data[0]}:\"{sub_data[1]}\" already exists"
     flash(message,"info")
-    return redirect("/admin/dashboard/add")
+    return redirect("/admin/dashboard/subject")
 
+@app.route("/edit/subject", methods=["POST"])
+@login_required
+def edit_subject():
+    up_data = [
+        request.form.get("subject"),
+        request.form.get("description"),
+        request.form.get("sub_id")
+    ]
+    if(sub.update(up_data)):
+        flash(f"Subject updated sucessfully","info")
+    else:
+        flash("Error try again","info")
+    return redirect(url_for("admin_subject"))
+
+@app.route("/delete/subject", methods=["POST"])
+@login_required
+def rm_subject():
+    sub_id = request.form.get("sub_id")
+    if(sub.remove(sub_id)):
+        flash(f"Subject deleted sucessfully","info")
+    else:
+        flash("Error try again","info")
+    return redirect(url_for("admin_subject"))
+
+############################################################ Chapter Path
 @app.route("/addchapter",methods=["POST"])
 @login_required
 def add_chapter():
@@ -178,8 +204,9 @@ def add_chapter():
     else:
         message =  f"Chapter {chap_data[0]}:\"{chap_data[1]}\" already exists"
     flash(message,"info")
-    return redirect("/admin/dashboard/add")
+    return redirect("/admin/dashboard/chapter")
 
+# Quiz path
 @app.route("/addquiz",methods=["POST"])
 @login_required
 def add_quiz():
@@ -197,13 +224,15 @@ def add_quiz():
     else:
         message =  f"{quiz_data[0]}:\"{quiz_data[1]}\" already exists"
     flash(message,"info")
-    return redirect("/admin/dashboard/add")
+    return redirect("/admin/dashboard/quiz")
 
 @app.route("/get/addquiz",methods=["POST"])
 def get_addquiz():
     sub_id = request.form.get("sub_id")
     return render_template("extra/addquiz.html",chaplist=chap.get(sub_id))
 
+
+############################################################ User Path
 @app.route('/user/dashboard')
 @login_required  
 def user_dashboard():

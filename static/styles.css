@@ -40,5 +40,6 @@ summary {
 }
 
 .response{
+    font-weight: bold !important;
     margin: auto !important;
 }
