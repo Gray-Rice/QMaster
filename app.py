@@ -98,40 +98,36 @@ def register():
             return render_template("register.html",message=message)
     return render_template("register.html",message=message)
 
-@app.route('/admin')
-def admin():
-    return redirect("/admin/dashboard")
-
 ################################################################### Protected Routes
 
 ############################################################ Admin Paths
-@app.route('/admin/dashboard/')
+@app.route('/admin/')
 @login_required  
 def admin_dashboard():
     return render_template("admin_dashboard.html",user="Admin")
 
-@app.route('/admin/dashboard/user')
+@app.route('/admin/users')
 @login_required  
 def admin_user():
     if(current_user.role != "admin"):
         return "Error unauthorised"
     return render_template("admin_user.html",user="Admin",userlist=uobj.get())
 
-@app.route('/admin/dashboard/subject')
+@app.route('/admin/subject')
 @login_required  
 def admin_subject():
     if(current_user.role != "admin"):
         return "Error unauthorised"
     return render_template("admin_subject.html",user="Admin",sublist=sub.get())
 
-@app.route('/admin/dashboard/quiz')
+@app.route('/admin/quiz')
 @login_required  
 def admin_quiz():
     if(current_user.role != "admin"):
         return "Error unauthorised"
     return render_template("admin_quiz.html",user="Admin",sublist=sub.get())
 
-@app.route('/admin/dashboard/quiz/questions')
+@app.route('/admin/questions')
 @login_required  
 def admin_question():
     if(current_user.role != "admin"):
@@ -154,7 +150,7 @@ def add_subject():
     else:
         message =  f"{sub_data[0]}:\"{sub_data[1]}\" already exists"
     flash(message,"info")
-    return redirect("/admin/dashboard/subject")
+    return redirect(url_for("admin_subject"))
 
 @app.route("/edit/subject", methods=["POST"])
 @login_required
@@ -181,7 +177,7 @@ def rm_subject():
     return redirect(url_for("admin_subject"))
 
 ############################################################ Chapter Path
-@app.route('/admin/dashboard/chapter')
+@app.route('/admin/chapter')
 @login_required  
 def admin_chapter():
     if(current_user.role != "admin"):
