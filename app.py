@@ -50,7 +50,7 @@ def login():
             user = load_user(username)
             login_user(user) #actuall login
             if (user.role == "admin"):
-                return redirect("/admin/dashboard")
+                return redirect(url_for('admin_dashboard'))
             return redirect(url_for('user_dashboard'))
         else:
             if(valid[1] == "usr"):
@@ -104,7 +104,7 @@ def register():
 @app.route('/admin/')
 @login_required  
 def admin_dashboard():
-    return render_template("admin_dashboard.html",user="Admin")
+    return render_template("admin.html",user="Admin")
 
 @app.route('/admin/users')
 @login_required  
