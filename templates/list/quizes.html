@@ -2,7 +2,7 @@
     <option value="" disabled selected>Select a Quiz</option>
     {% if quizlist %}
         {% for i in quizlist %}
-            <option value="{{ i[0] }}">{{ i[1] }} - {{ i[2]}}</option>
+            <option value="{{ i[0] }}">Chapter {{ i[1] }} - {{ i[2]}}</option>
         {% endfor %}
     {% else %}
         <option value="" disabled>No Quiz available</option>

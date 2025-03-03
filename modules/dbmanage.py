@@ -12,7 +12,6 @@ def get_role(username):
 
 class users():
     def add(self,user):
-        # Format = list username,password,fname,qual,dob
         with sqlite3.connect("data/instance.db") as conn:
             try:
                 user[0] = user[0].strip()
@@ -90,8 +89,7 @@ class subject:
         with sqlite3.connect("data/instance.db") as conn:
             try:
                 cursor = conn.cursor()
-                cursor.execute("PRAGMA foreign_keys = ON;") # To enable cascading on delete
-                # Delete
+                cursor.execute("PRAGMA foreign_keys = ON;")
                 cursor.execute("DELETE FROM Subjects WHERE id = ?", (sub_id,))
                 conn.commit()
                 print(f"Subject '{sub_id}' deleted successfully.")
@@ -198,11 +196,15 @@ class quiz:
 class questions:
     def add(self,questions):
         with sqlite3.connect("data/instance.db") as conn:
-            cursor = conn.cursor()
-            for q in questions:
-                cursor.execute('''INSERT INTO Questions (quiz_id, qstatement, opt1,opt2,opt3,opt4,copt) VALUES (?,?,?,?,?,?,?)''',q)
-            conn.commit()
-            print("Questions added")
+            try:
+                cursor = conn.cursor()
+                for q in questions:
+                    cursor.execute('''INSERT INTO Questions (quiz_id, qstatement, opt1,opt2,opt3,opt4,copt) VALUES (?,?,?,?,?,?,?)''',q)
+                conn.commit()
+                print("Questions added")
+                return True
+            except Exception:
+                return False
 
     def get(self,quiz_id=None):
         with sqlite3.connect("data/instance.db") as conn:
@@ -214,8 +216,7 @@ class questions:
     def remove(self,qid):
         with sqlite3.connect("data/instance.db") as conn:
             cursor = conn.cursor()
-            cursor.execute("PRAGMA foreign_keys = ON;") # To enable cascading on delete
-            # Delete
+            cursor.execute("PRAGMA foreign_keys = ON;") 
             cursor.execute("DELETE FROM Questions WHERE id = ?", (qid,))
             conn.commit()
             print(f"Question '{qid}' deleted successfully.")

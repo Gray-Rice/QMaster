@@ -135,8 +135,42 @@ def admin_question():
         return "Error unauthorised"
     return render_template("admin_questions.html",user="Admin",quizlist=quiz.get())
 
+@app.route('/add/questions/',methods=["GET","POST"])
+@login_required  
+def add_question():
+    if(current_user.role != "admin"):
+        return "Error unauthorised"
+    quest_d = session["quest_d"]
+    if request.method == "POST":
+        quiz_id = quest_d[0]
+        n = quest_d[1]
+        quest_data = []
+        for i in range (0,n):
+            # (quiz_id, qstatement, opt1,opt2,opt3,opt4,copt)
+            temp = [ quiz_id,request.form.get(f'qstatement_{i}').strip()]
+            for j in range(0,4):
+                temp.append( request.form.get(f'opt{i}_{j}').strip() )
+            temp.append( int(request.form.get(f'copt_{i}')) )
+            quest_data.append(temp)
+        if(quest.add(quest_data)):
+            mesg = "Successfully added questions"
+        else:
+            mesg = "Error Try again"
+        flash(mesg,"info")
+        return redirect(url_for("admin_question"))
+    return render_template("forms/addquest.html",n=quest_d[1])
+
+@app.route("/get/addquest",methods=["POST"])
+def get_addquest():
+    session["quest_d"] = [
+        request.form.get("quiz_id"),
+        int(request.form.get("n")),
+    ]
+    return redirect(url_for("add_question"))
+
+
 ############################################################ Subject paths
-@app.route("/addsubject",methods=["POST"])
+@app.route("/add/subject",methods=["POST"])
 @login_required
 def add_subject():
     if(current_user.role != "admin"):
@@ -185,7 +219,7 @@ def admin_chapter():
         return "Error unauthorised"
     return render_template("admin_chapter.html",user="Admin",sublist=sub.get())
 
-@app.route("/addchapter",methods=["POST"])
+@app.route("/add/chapter",methods=["POST"])
 @login_required
 def add_chapter():
     if(current_user.role != "admin"):
@@ -238,7 +272,7 @@ def get_delchap():
     return render_template("forms/delchap.html",chaplist=chap.get(sub_id))
 
 ############################################################ Quiz path
-@app.route("/addquiz",methods=["POST"])
+@app.route("/add/quiz",methods=["POST"])
 @login_required
 def add_quiz():
     if(current_user.role != "admin"):
