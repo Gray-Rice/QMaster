@@ -18,6 +18,7 @@
             <a href="/admin/subject" style="padding-right: 1%;"> Subject</a>
             <a href="/admin/chapter" style="padding-right: 1%;"> Chapter</a>
             <a href="/admin/quiz" style="padding-right: 1%;"> Quiz</a>
+            <a href="/admin/questions" style="padding-right: 1%;"> Questions</a>
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" style="color: white;">
@@ -33,27 +34,30 @@
         </div>
     </nav>
     <div style="margin: auto; padding: 4%;">
-    <div class="card mb-4 shadow-lg rounded-4 d-flex" style="margin:auto; max-width: 80vw;padding: 2%;">
-        <h2>Enter Questions to Add</h2>
-        <form action="/add/questions" method="post">
+        <div class="text-center">
+            <h2 class="mt-3 mb-3">Enter Questions to Add</h2>
+        </div>
+        
+        <form action="/add/questions" method="post" style="margin: auto;max-width: 80vw;">
             {% for i in range(n) %}
-            <fieldset>
+            <fieldset class="form-control mb-3" style="margin:auto ;max-height: 60vh;">
                 <legend>Question {{ i+1 }}</legend>
                 <label>Question Statement:</label>
-                <input type="text" name="qstatement_{{ i }}" required><br>
-
+                <input class="form-control" type="text" name="qstatement_{{ i }}" placeholder="Statement" required><br>
                 {% for j in range(4) %}
-                <label>Option {{ j+1 }}:</label>
-                <input type="text" name="opt{{ i }}_{{ j }}" required><br>
+                    <label>Option {{ j+1 }}:</label>
+                    {% if j < 2 %}
+                        <input class="form-control" type="text" name="opt{{ i }}_{{ j }}" placeholder="Option {{ j+1 }}" required><br>
+                    {% else %}
+                        <input class="form-control" type="text" name="opt{{ i }}_{{ j }}" placeholder="Option {{ j+1 }}" ><br>
+                    {% endif %}
                 {% endfor %}
-
                 <label>Correct Option:</label>
-                <input type="text" name="copt_{{ i }}" required><br>
+                <input class="form-control" type="text" name="copt_{{ i }}" placeholder="Correct Option" required><br>
             </fieldset>
             {% endfor %}
-            <button type="submit">Submit Questions</button>
+            <button class="mt-3 mb-3 btn" style="background-color: white;color: #3b4f61;" type="submit">Submit Questions</button>
         </form>
-    </div>
     </div>
 </body>
 
