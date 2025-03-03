@@ -3,13 +3,13 @@ from flask_login import LoginManager, UserMixin, login_user, login_required, log
 
 # User-defined modules
 import modules.dbmanage as dbm
-from modules.auth import verify_login
+import modules.security as sec
 
 uobj = dbm.users()
 sub = dbm.subject()
 chap = dbm.chapter()
 quiz = dbm.quiz()
-qu = dbm.questions()
+quest = dbm.questions()
 sc = dbm.score()
 
 app = Flask(__name__)
@@ -44,7 +44,7 @@ def login():
         username = request.form.get('username').strip()
         password = request.form.get('password').strip()
 
-        valid = verify_login(username, password)
+        valid = sec.verify_login(username, password)
         if valid[0]:
             session["user"] = valid[1]
             user = load_user(username)
@@ -87,9 +87,9 @@ def register():
         ]
         status = uobj.add(user_data)
         if(status):
-            if request.headers.get("HX-Request"):
-                return f"<p> User {user_data[0]} Added Succesfully </p>"
             flash("User added sucessfully","info")
+            if request.headers.get("HX-Request"):
+                return redirect(url_for("admin_user"))
             return redirect("/login")
         else:
             message= f"Username {user_data[0]} already exists."
@@ -106,7 +106,7 @@ def register():
 def admin_dashboard():
     return render_template("admin.html",user="Admin")
 
-@app.route('/admin/users')
+@app.route('/admin/user')
 @login_required  
 def admin_user():
     if(current_user.role != "admin"):
@@ -127,12 +127,13 @@ def admin_quiz():
         return "Error unauthorised"
     return render_template("admin_quiz.html",user="Admin",sublist=sub.get())
 
+############################################################ Questions
 @app.route('/admin/questions')
 @login_required  
 def admin_question():
     if(current_user.role != "admin"):
         return "Error unauthorised"
-    return render_template("admin_quiz.html",user="Admin",sublist=sub.get())
+    return render_template("admin_questions.html",user="Admin",quizlist=quiz.get())
 
 ############################################################ Subject paths
 @app.route("/addsubject",methods=["POST"])
@@ -236,7 +237,7 @@ def get_delchap():
     sub_id = request.form.get("sub_id")
     return render_template("forms/delchap.html",chaplist=chap.get(sub_id))
 
-# Quiz path
+############################################################ Quiz path
 @app.route("/addquiz",methods=["POST"])
 @login_required
 def add_quiz():
@@ -254,7 +255,7 @@ def add_quiz():
     else:
         message =  f"\"{quiz_data[1]}\" already exists"
     flash(message,"info")
-    return redirect("/admin/dashboard/quiz")
+    return redirect(url_for("admin_quiz"))
 
 @app.route("/edit/quiz", methods=["POST"])
 @login_required
@@ -321,5 +322,5 @@ def logout():
     return redirect("/login")
 
 if __name__ == '__main__':
-    dbm.start_checkup()
+    sec.start_checkup()
     app.run(debug=True)
