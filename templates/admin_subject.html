@@ -46,7 +46,7 @@
         <div class="card mb-4 shadow-lg rounded-4 d-flex" style="margin:auto; max-width: 80vw;">
             <h3 class="mt-4" style="margin: auto;">Edit Subject</h3>
             <form action="/edit/subject" method="post">
-                {% include 'extra/subjects.html' %} 
+                {% include 'list/subjects.html' %} 
                 <input class="form-control mt-3" type="text" name="subject" placeholder="New Subject Name" required>
                 <input class="form-control mt-3" type="text" name="description" placeholder="New Description" required>
                 <button class="submit-btn mt-3 mb-3 btn btn-primary" type="submit">Update</button>
@@ -56,7 +56,7 @@
         <div class="card mb-4 shadow-lg rounded-4 d-flex" style="margin:auto; max-width: 80vw;">
             <h3 class="mt-4" style="margin: auto;">Delete Subject</h3>
             <form action="/delete/subject" method="post" onsubmit="return confirmDelete();">
-                {% include 'extra/subjects.html' %} 
+                {% include 'list/subjects.html' %} 
                 <button class="submit-btn mt-3 mb-3 btn btn-primary" type="submit">Delete</button>
             </form>
         </div>

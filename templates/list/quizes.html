@@ -1,0 +1,10 @@
+<select class="form-control" name="quiz_id" required>
+    <option value="" disabled selected>Select a Quiz</option>
+    {% if quizlist %}
+        {% for i in quizlist %}
+            <option value="{{ i[0] }}">{{ i[1] }} - {{ i[2]}}</option>
+        {% endfor %}
+    {% else %}
+        <option value="" disabled>No Quiz available</option>
+    {% endif %}
+</select>

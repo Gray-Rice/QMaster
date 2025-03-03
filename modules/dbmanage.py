@@ -215,15 +215,27 @@ class quiz:
             quizes = cursor.fetchall()
             return quizes
 
-    def remove(self,quiz_id):
+    def update(self,up_data):
         with sqlite3.connect("data/instance.db") as conn:
             cursor = conn.cursor()
-            cursor.execute("PRAGMA foreign_keys = ON;") # To enable cascading on delete
-            # Delete
-            cursor.execute("DELETE FROM Quiz WHERE id = ?", (quiz_id,))
-            conn.commit()
-            print(f"Quiz '{quiz_id}' deleted successfully.")
+            try:
+                conn.execute("UPDATE Quiz SET name = ?, quiz_date = ?,duration = ? WHERE id = ?",up_data)
+                conn.commit()
+                return True
+            except Exception:
+                return False
 
+    def remove(self,quiz_id):
+        with sqlite3.connect("data/instance.db") as conn:
+            try:
+                cursor = conn.cursor()
+                cursor.execute("PRAGMA foreign_keys = ON;")
+                cursor.execute("DELETE FROM Quiz WHERE id = ?", (quiz_id,))
+                conn.commit()
+                print(f"Quiz '{quiz_id}' deleted successfully.")
+                return True
+            except Exception:
+                return False
 #  Questions
 class questions:
     def add(self,questions):

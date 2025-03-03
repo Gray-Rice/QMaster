@@ -8,7 +8,7 @@ from modules.auth import verify_login
 uobj = dbm.users()
 sub = dbm.subject()
 chap = dbm.chapter()
-qz = dbm.quiz()
+quiz = dbm.quiz()
 qu = dbm.questions()
 sc = dbm.score()
 
@@ -222,7 +222,7 @@ def edit_chapter():
 
 @app.route("/delete/chapter", methods=["POST"])
 @login_required
-def rm_chapter():
+def del_chapter():
     chap_id = request.form.get("chap_id")
     if(chap.remove(chap_id)):
         flash(f"Chapter deleted sucessfully","info")
@@ -253,18 +253,62 @@ def add_quiz():
         request.form.get('duration'),
         request.form.get('description').strip(),
     ]
-    if(qz.add(quiz_data)):
-        message =  f"{quiz_data[0]}:\"{quiz_data[1]}\" added successfully"
+    if(quiz.add(quiz_data)):
+        message =  f"\"{quiz_data[1]}\" added successfully"
     else:
-        message =  f"{quiz_data[0]}:\"{quiz_data[1]}\" already exists"
+        message =  f"\"{quiz_data[1]}\" already exists"
     flash(message,"info")
     return redirect("/admin/dashboard/quiz")
+
+@app.route("/edit/quiz", methods=["POST"])
+@login_required
+def edit_quiz():
+    up_data = [
+        request.form.get("name"),
+        request.form.get("doq"),
+        request.form.get("duration"),
+        request.form.get("quiz_id")
+    ]
+    if(quiz.update(up_data)):
+        flash(f"quiz updated sucessfully","info")
+    else:
+        flash("Error try again","info")
+    return redirect(url_for("admin_quiz"))
+
+@app.route("/delete/quiz", methods=["POST"])
+@login_required
+def del_quiz():
+    quiz_id = request.form.get("quiz_id")
+    if(quiz.remove(quiz_id)):
+        flash(f"Quiz deleted sucessfully","info")
+    else:
+        flash("Error try again","info")
+    return redirect(url_for("admin_quiz"))
 
 @app.route("/get/addquiz",methods=["POST"])
 def get_addquiz():
     sub_id = request.form.get("sub_id")
     return render_template("forms/addquiz.html",chaplist=chap.get(sub_id))
 
+@app.route("/get/editquiz",methods=["POST"])
+def get_editquiz():
+    chap_id = request.form.get("chap_id")
+    return render_template("forms/editquiz.html",quizlist=quiz.get(chap_id))
+
+@app.route("/get/delquiz",methods=["POST"])
+def get_delquiz():
+    chap_id = request.form.get("chap_id")
+    return render_template("forms/delquiz.html",quizlist=quiz.get(chap_id))
+
+@app.route("/get/temp/editquiz",methods=["POST"])
+def temp_editquiz():
+    sub_id = request.form.get("sub_id")
+    return render_template("forms/qechap.html",chaplist=chap.get(sub_id))
+
+@app.route("/get/temp/delquiz",methods=["POST"])
+def temp_delquiz():
+    sub_id = request.form.get("sub_id")
+    return render_template("forms/qdchap.html",chaplist=chap.get(sub_id))
 
 ############################################################ User Path
 @app.route('/user/dashboard')
