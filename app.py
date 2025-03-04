@@ -177,7 +177,7 @@ def edit_quest():
     for j in range(0,4):
         up_data.append( request.form.get(f'opt{j}').strip() )
     up_data.extend( [int(request.form.get(f'copt')), session["quest_d"] ] )
-    if(sub.update(up_data)):
+    if(quest.update(up_data)):
         flash(f"Question updated sucessfully","info")
     else:
         flash("Error try again","info")

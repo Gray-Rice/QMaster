@@ -89,7 +89,8 @@ class subject:
                 conn.commit()
                 print(f"Subject '{sub_id}' deleted successfully.")
                 return True
-            except Exception:
+            except Exception as e:
+                print("Exception: "+e)
                 return False
     
     def update(self,up_data):
@@ -99,7 +100,8 @@ class subject:
                 conn.execute("UPDATE Subjects SET name = ?, description = ? WHERE id = ?",up_data)
                 conn.commit()
                 return True
-            except Exception:
+            except Exception as e:
+                print("Exception: "+e)
                 return False
 
 # Chapter
@@ -130,7 +132,8 @@ class chapter:
                 conn.commit()
                 print(f"Chapter '{chap_id}' deleted successfully.")
                 return True
-            except Exception:
+            except Exception as e:
+                print("Exception: "+e)
                 return False
     
     def update(self,up_data):
@@ -140,7 +143,8 @@ class chapter:
                 conn.execute("UPDATE Chapters SET name = ?, description = ? WHERE id = ?",up_data)
                 conn.commit()
                 return True
-            except Exception:
+            except Exception as e:
+                print("Exception: "+e)
                 return False
 
 # Quiz
@@ -153,7 +157,8 @@ class quiz:
                 conn.commit()
                 print("Quiz Added")
                 return True
-            except Exception:
+            except Exception as e:
+                print("Exception: "+e)
                 return False
 
     def get(self,chapter_id=None):
@@ -173,7 +178,8 @@ class quiz:
                 conn.execute("UPDATE Quiz SET name = ?, quiz_date = ?,duration = ? WHERE id = ?",up_data)
                 conn.commit()
                 return True
-            except Exception:
+            except Exception as e:
+                print("Exception: "+e)
                 return False
 
     def remove(self,quiz_id):
@@ -185,7 +191,8 @@ class quiz:
                 conn.commit()
                 print(f"Quiz '{quiz_id}' deleted successfully.")
                 return True
-            except Exception:
+            except Exception as e:
+                print("Exception: "+e)
                 return False
 #  Questions
 class questions:
@@ -198,7 +205,8 @@ class questions:
                 conn.commit()
                 print("Questions added")
                 return True
-            except Exception:
+            except Exception as e:
+                print("Exception: "+e)
                 return False
 
     def get(self,quiz_id=None):
@@ -215,16 +223,21 @@ class questions:
                 conn.execute("UPDATE Questions SET qstatement = ?,opt1 = ?,opt2 = ?,opt3  = ?,opt4  = ?,copt = ? WHERE id = ?",up_data)
                 conn.commit()
                 return True
-            except Exception:
+            except Exception as e:
+                print("Exception: "+e)
                 return False
 
     def remove(self,qid):
         with sqlite3.connect("data/instance.db") as conn:
-            cursor = conn.cursor()
-            cursor.execute("PRAGMA foreign_keys = ON;") 
-            cursor.execute("DELETE FROM Questions WHERE id = ?", (qid,))
-            conn.commit()
-            print(f"Question '{qid}' deleted successfully.")
+            try:
+                cursor = conn.cursor()
+                cursor.execute("PRAGMA foreign_keys = ON;") 
+                cursor.execute("DELETE FROM Questions WHERE id = ?", (qid,))
+                conn.commit()
+                print(f"Question '{qid}' deleted successfully.")
+            except Exception as e:
+                print("Exception: "+e)
+                return False
 
 # Scores
 class score:
