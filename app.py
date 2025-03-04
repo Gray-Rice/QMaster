@@ -297,15 +297,16 @@ def del_chapter():
         flash("Error try again","info")
     return redirect(url_for("admin_chapter"))
 
-@app.route("/get/edit/chapter",methods=["POST"])
-def get_editchap():
-    sub_id = request.form.get("sub_id")
-    return render_template("forms/chapter/edit.html",chaplist=chap.get(sub_id))
+@app.route("/get/chapter",methods=["POST"])
+def get_chapter():
+    reqtype = request.form.get("reqtype")
+    if(reqtype == "edit"):
+        sub_id = request.form.get("sub_id")
+        return render_template("forms/chapter/edit.html",chaplist=chap.get(sub_id))
+    elif(reqtype == "del"):
+        sub_id = request.form.get("sub_id")
+        return render_template("forms/chapter/delete.html",chaplist=chap.get(sub_id))
 
-@app.route("/get/delete/chapter",methods=["POST"])
-def get_delchap():
-    sub_id = request.form.get("sub_id")
-    return render_template("forms/chapter/delete.html",chaplist=chap.get(sub_id))
 
 ############################################################ Quiz path
 @app.route("/add/quiz",methods=["POST"])
@@ -352,30 +353,24 @@ def del_quiz():
         flash("Error try again","info")
     return redirect(url_for("admin_quiz"))
 
-@app.route("/get/add/quiz",methods=["POST"])
-def get_addquiz():
-    sub_id = request.form.get("sub_id")
-    return render_template("forms/quiz/add.html",chaplist=chap.get(sub_id))
-
-@app.route("/get/edit/quiz",methods=["POST"])
-def get_editquiz():
-    chap_id = request.form.get("chap_id")
-    return render_template("forms/quiz/edit.html",quizlist=quiz.get(chap_id))
-
-@app.route("/get/delete/quiz",methods=["POST"])
-def get_delquiz():
-    chap_id = request.form.get("chap_id")
-    return render_template("forms/quiz/delete.html",quizlist=quiz.get(chap_id))
-
-@app.route("/get/temp/editquiz",methods=["POST"])
-def temp_editquiz():
-    sub_id = request.form.get("sub_id")
-    return render_template("forms/quiz/temp_edit.html",chaplist=chap.get(sub_id))
-
-@app.route("/get/temp/delquiz",methods=["POST"])
-def temp_delquiz():
-    sub_id = request.form.get("sub_id")
-    return render_template("forms/quiz/temp_del.html",chaplist=chap.get(sub_id))
+@app.route("/get/quiz",methods=["POST"])
+def get_quiz():
+    reqtype = request.form.get("reqtype")
+    if(reqtype == "add"):
+        sub_id = request.form.get("sub_id")
+        return render_template("forms/quiz/add.html",chaplist=chap.get(sub_id))
+    elif(reqtype == "edit-temp"):
+        sub_id = request.form.get("sub_id")
+        return render_template("forms/quiz/temp_edit.html",chaplist=chap.get(sub_id))
+    elif(reqtype == "edit"):
+        chap_id = request.form.get("chap_id")
+        return render_template("forms/quiz/edit.html",quizlist=quiz.get(chap_id))
+    elif(reqtype == "del-temp"):
+        sub_id = request.form.get("sub_id")
+        return render_template("forms/quiz/temp_del.html",chaplist=chap.get(sub_id))
+    elif(reqtype == "del"):
+        chap_id = request.form.get("chap_id")
+        return render_template("forms/quiz/delete.html",quizlist=quiz.get(chap_id))
 
 ############################################################ User Path
 @app.route('/user/dashboard')

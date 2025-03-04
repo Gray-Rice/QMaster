@@ -51,8 +51,9 @@
         <!-- Edit -->
         <div class="card mb-4 shadow-lg rounded-4 d-flex" style="margin:auto; max-width: 80vw;">
             <h3 class="mt-4" style="margin: auto;" >Edit Chapter</h3>
-                <form  hx-post="/get/edit/chapter" hx-target="#editchap" hx-swap="outerHTML">
+                <form  hx-post="/get/chapter" hx-target="#editchap" hx-swap="outerHTML">
                     {% include 'list/subjects.html' %} 
+                    <input type="hidden" name="reqtype" value="edit">
                     <button class="mt-3 mb-3 btn" style="background-color: #3b4f61;color: white;" type="submit">Fetch Chapters</button>
                 </form>
                 <div>
@@ -62,8 +63,9 @@
 
         <div class="card mb-4 shadow-lg rounded-4 d-flex" style="margin:auto; max-width: 80vw;">
             <h3 class="mt-4" style="margin: auto;" >Delete Chapter</h3>
-                <form hx-post="/get/delete/chapter" hx-target="#delchap" hx-swap="outerHTML">
-                    {% include 'list/subjects.html' %} 
+                <form hx-post="/get/chapter" hx-target="#delchap" hx-swap="outerHTML">
+                    {% include 'list/subjects.html' %}
+                    <input type="hidden" name="reqtype" value="del">
                     <button class="mt-3 mb-3 btn" style="background-color: #3b4f61;color: white;" type="submit">Fetch Chapters</button>
                 </form>
                 <div>
