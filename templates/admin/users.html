@@ -47,6 +47,23 @@
             </form>
             <div id="register-response" class=" mb-3" style="margin: auto;"></div>
         </div>
+        <div class="card mb-4 justify-content-center shadow-lg rounded-4 d-flex" style="margin:auto; max-width: 80vw;">
+            <!-- User details -->
+            <h3 class="mt-4" style="margin: auto;" >User Details</h3>
+            <div class="justify-content-center" style="padding: 1%;">
+                {% for user in userlist %}
+                <details class="card mt-2 mb-2">
+                    <summary>{{ user[1] }}</summary>  {# Username #}
+                    <div style="padding-left: 2%;">
+                    <p><strong>ID:</strong> {{ user[0] }}</p>
+                    <p><strong>Full Name:</strong> {{ user[2] }}</p>
+                    <p><strong>Qualification:</strong> {{ user[3] }}</p>
+                    <p><strong>Date of Birth:</strong> {{ user[4] }}</p>
+                    </div>
+                </details>
+                {% endfor %}
+            </div>
+        </div>
     </div>
 </body>
 </html>
