@@ -23,12 +23,16 @@ class users():
             except sqlite3.IntegrityError :
                 return False
 
-    def get(self):
+    def get(self,username=None):
         with sqlite3.connect("data/instance.db") as conn:
                 cursor = conn.cursor()
-                cursor.execute(f'''SELECT id,username,fullname,qualification,dob from Users''')
-                users = cursor.fetchall()
-                users.pop(0)
+                if(username == None):
+                    cursor.execute(f'''SELECT id,username,fullname,qualification,dob from Users''')
+                    users = cursor.fetchall()
+                    users.pop(0)
+                else:
+                    cursor.execute(f"SELECT id,username,fullname,qualification,dob from Users WHERE username = ?",(username,))
+                    users = cursor.fetchone()
                 return users
 
     def search(self,username=None,id=None):
@@ -209,12 +213,16 @@ class questions:
                 print("Exception: "+e)
                 return False
 
-    def get(self,quiz_id=None):
+    def get(self,quiz_id):
         with sqlite3.connect("data/instance.db") as conn:
-            cursor = conn.cursor()
-            cursor.execute(f'''SELECT * FROM Questions WHERE quiz_id = ?''',(quiz_id,))
-            questions = cursor.fetchall()
-            return questions
+            try:
+                cursor = conn.cursor()
+                cursor.execute(f'''SELECT * FROM Questions WHERE quiz_id = ?''',(quiz_id,))
+                questions = cursor.fetchall()
+                return questions
+            except Exception as e:
+                print("Questions get exception: "+ e)
+                return None
 
     def update(self,up_data):
         with sqlite3.connect("data/instance.db") as conn:

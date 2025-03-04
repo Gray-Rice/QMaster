@@ -11,8 +11,45 @@
 <body>
     <div class="blur"></div>
     <div class="mb-3">
-        {% include 'navbar.html' %}
+        {% include 'extra/navbar.html' %}
     </div>
-    <p>Welcome {{user}}</p>
+    <div style="padding: 4%;margin: auto;">
+       <p >Welcome {{user}}</p> 
+        
+       <!-- Subjects -->       
+       <div class="card mb-4 justify-content-center shadow-lg rounded-4 d-flex" style="margin:auto; max-width: 80vw;">
+            <h3 class="mt-4" style="margin: auto;">Subjects</h3>
+            <div class="justify-content-center" style="padding: 1%;">
+                {% for s in sublist %}
+                <details class="card mt-2 mb-2">
+                    <summary>{{ s[2] }}</summary>
+                    <div style="padding-left: 2%;">
+                        <p><strong>Code:</strong> {{ s[1] }}</p>
+                        <p><strong>Description:</strong> {{ s[3] }}</p>
+                    </div>
+                </details>
+                {% endfor %}
+            </div>
+        </div>
+        <!-- Quiz -->
+        <div class="card mb-4 justify-content-center shadow-lg rounded-4 d-flex" style="margin:auto; max-width: 80vw;">
+            <h3 class="mt-4" style="margin: auto;">Quizzes</h3>
+            <div class="justify-content-center" style="padding: 1%;">
+                {% for q in quizlist %}
+                <details class="card mt-2 mb-2">
+                    <summary>{{ q[2] }}</summary>
+                    <div style="padding-left: 2%;">
+                        <p><strong>Chapter ID:</strong> {{ q[1] }}</p>
+                        <p><strong>Date:</strong> {{ q[3] }}</p>
+                        <p><strong>Duration:</strong> {{ q[4] }} Hours</p>
+                        <p><strong>Description:</strong> {{ q[5] }}</p>
+                        <a href="/user/quiz/{{ q[0] }}" class="btn btn-dark mb-2" style="background-color: #3b4f61;color: white;">Goto Quiz</a>
+                    </div>
+                </details>
+                {% endfor %}
+            </div>
+        </div>
+        
+    </div>
 </body>
 </html>

@@ -22,7 +22,7 @@ login_manager.login_view = "login"
 # User class required for Flask Login (UserMixin is helper function), load_user creates User object, gives session identitity
 class User(UserMixin):
     def __init__(self, username,role):
-        self.id = username 
+        self.id = username
         self.role = role
 
 @login_manager.user_loader
@@ -99,6 +99,18 @@ def register():
     return render_template("register.html",message=message)
 
 ################################################################### Protected Routes
+
+############################################################ User Path
+@app.route('/user/')
+@login_required  
+def user_dashboard():
+    user = session["user"]
+    return render_template("user/dashboard.html",user=user["fname"],sublist=sub.get(),quizlist=quiz.get())
+
+@app.route('/user/quiz/<int:quiz_id>')
+@login_required 
+def user_quiz(quiz_id):
+    return render_template("user/quiz.html")
 
 ############################################################ Admin Paths
 @app.route('/admin/')
@@ -372,12 +384,7 @@ def get_quiz():
         chap_id = request.form.get("chap_id")
         return render_template("forms/quiz/delete.html",quizlist=quiz.get(chap_id))
 
-############################################################ User Path
-@app.route('/user/dashboard')
-@login_required  
-def user_dashboard():
-    user = session["user"]
-    return render_template("user_dashboard.html",user=user["fname"])
+
 
 @app.route('/logout')
 @login_required

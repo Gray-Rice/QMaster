@@ -1,14 +1,14 @@
 <nav class="navbar navbar-expand-lg navbar-dark fixed-top" style="background-color: #3b4f61;">
     <div class="container-fluid">
-        <a class="navbar-brand" href="/admin/dashboard">Dashboard</a>
-        <a href="/admin/dashboard/view" style="color: white;">View</a>
+        <a class="navbar-brand" href="/user">Dashboard</a>
+        <a href="/search" style="color: white;">Search</a>
         <ul class="navbar-nav ms-auto">
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" style="color: white;">
                     {{ user }}
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end">
-                    <li><a class="dropdown-item" href="/profile">Profile</a></li>
+                    <li><a class="dropdown-item" href="/user/profile">Profile</a></li>
                     <li><hr class="dropdown-divider"></li>
                     <li><a class="dropdown-item text-danger" href="/logout">Logout</a></li>
                 </ul>
