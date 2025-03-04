@@ -1,0 +1,18 @@
+<form action="/edit/question" method="post">
+    <fieldset class="form-control mb-3" style="margin:auto ;max-height: 60vh;">
+                <label>Question Statement:</label>
+                <input class="form-control" type="text" name="qstatement" placeholder="Statement" required><br>
+                {% for j in range(4) %}
+                    <label>Option {{ j+1 }}:</label>
+                    {% if j < 2 %}
+                        <input class="form-control" type="text" name="opt{{ j }}" placeholder="Option {{ j+1 }}" required><br>
+                    {% else %}
+                        <input class="form-control" type="text" name="opt{{ j }}" placeholder="Option {{ j+1 }}" ><br>
+                    {% endif %}
+                {% endfor %}
+                <label>Correct Option:</label>
+                <input class="form-control" type="number" name="copt" placeholder="Correct Option" required><br>
+    </fieldset>
+    <button class=" mb-3 btn" style="background-color: #3b4f61;color: white;" type="submit">Edit</button>
+  </form>
+  

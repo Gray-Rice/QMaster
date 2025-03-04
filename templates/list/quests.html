@@ -1,0 +1,10 @@
+<select class="form-control" name="quest_id" required>
+    <option value="" disabled selected>Select a Question</option>
+    {% if questlist %}
+        {% for i in questlist %}
+            <option value="{{ i[0] }}">{{ loop.index }}) {{ i[2]}}</option>
+        {% endfor %}
+    {% else %}
+        <option value="" disabled>No questions available</option>
+    {% endif %}
+</select>

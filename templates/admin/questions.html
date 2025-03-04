@@ -35,31 +35,35 @@
     
     <div style="margin: auto; padding: 4%;">
         {% include 'extra/response.html' %} 
+        <!-- Add -->
         <div class="card mb-4 shadow-lg rounded-4 d-flex" style="margin:auto; max-width: 80vw;">
             <h3 class="mt-4 mb-3" style="margin: auto;" >Add Questions</h3>
-                <form action="/get/add/quest" method="post">
+                <form action="/get/quest" method="post">
                     {% include 'list/quizes.html' %} 
+                    <input type="hidden" name="reqtype" value="add">
                     <input class="form-control mt-3" type="number" name="n" placeholder="No. of Questions" required>
                     <button class="mt-3 mb-3 btn" style="background-color: #3b4f61;color: white;" type="submit">Go</button>
                 </form>
         </div>
-
+        <!-- Edit -->
         <div class="card mb-4 shadow-lg rounded-4 d-flex" style="margin:auto; max-width: 80vw;">
             <h3 class="mt-4 mb-3" style="margin: auto;" >Edit Questions</h3>
-            <form  hx-post="/get/edit/quest" hx-target="#editquest" hx-swap="outerHTML">
+            <form  hx-post="/get/quest" hx-target="#editquiz" hx-swap="outerHTML">
                 {% include 'list/quizes.html' %} 
-                <button class="mt-3 mb-3 btn" style="background-color: #3b4f61;color: white;" type="submit">Fetch Chapters</button>
+                <input type="hidden" name="reqtype" value="edit-temp">
+                <button class="mt-3 mb-3 btn" style="background-color: #3b4f61;color: white;" type="submit">Fetch Questions</button>
             </form>
             <div>
-                <div id="editquest"></div>
+                <div id="editquiz"></div>
             </div>
         </div>
-
+        <!-- Delete -->
         <div class="card mb-4 shadow-lg rounded-4 d-flex" style="margin:auto; max-width: 80vw;">
             <h3 class="mt-4 mb-3" style="margin: auto;" >Delete Questions</h3>
-            <form  hx-post="/get/delete/quest" hx-target="#delquest" hx-swap="outerHTML">
+            <form  hx-post="/get/quest" hx-target="#delquest" hx-swap="outerHTML">
                 {% include 'list/quizes.html' %} 
-                <button class="mt-3 mb-3 btn" style="background-color: #3b4f61;color: white;" type="submit">Fetch Chapters</button>
+                <input type="hidden" name="reqtype" value="del">
+                <button class="mt-3 mb-3 btn" style="background-color: #3b4f61;color: white;" type="submit">Fetch Questions</button>
             </form>
             <div>
                 <div id="delquest"></div>

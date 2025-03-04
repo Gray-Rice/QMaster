@@ -73,15 +73,10 @@ class subject:
             except sqlite3.IntegrityError :
                 return False
 
-    def get(self,user_id = None):
+    def get(self):
         with sqlite3.connect("data/instance.db") as conn:
             cursor = conn.cursor()
-            if(user_id == None):
-                cursor.execute(f'''SELECT * from Subjects''')
-            else:
-                cursor.exeute(f'''SELECT  s.id,s.name,s.description
-                                    FROM Subjects s,Enrolled e
-                                    WHERE e.subject_id = s.id AND e.user_id = ?;''',(user_id,))
+            cursor.execute(f'''SELECT * from Subjects''')
             subjects = cursor.fetchall()
             return subjects
 
@@ -131,7 +126,7 @@ class chapter:
             try:
                 cursor = conn.cursor()
                 cursor.execute("PRAGMA foreign_keys = ON;") # To enable cascading on delete
-                cursor.execute("DELETE FROM Chapter WHERE id = ?", (chap_id,))
+                cursor.execute("DELETE FROM Chapters WHERE id = ?", (chap_id,))
                 conn.commit()
                 print(f"Chapter '{chap_id}' deleted successfully.")
                 return True
@@ -142,7 +137,7 @@ class chapter:
         with sqlite3.connect("data/instance.db") as conn:
             cursor = conn.cursor()
             try:
-                conn.execute("UPDATE Chapter SET name = ?, description = ? WHERE id = ?",up_data)
+                conn.execute("UPDATE Chapters SET name = ?, description = ? WHERE id = ?",up_data)
                 conn.commit()
                 return True
             except Exception:
@@ -212,6 +207,16 @@ class questions:
             cursor.execute(f'''SELECT * FROM Questions WHERE quiz_id = ?''',(quiz_id,))
             questions = cursor.fetchall()
             return questions
+
+    def update(self,up_data):
+        with sqlite3.connect("data/instance.db") as conn:
+            cursor = conn.cursor()
+            try:
+                conn.execute("UPDATE Questions SET qstatement = ?,opt1 = ?,opt2 = ?,opt3  = ?,opt4  = ?,copt = ? WHERE id = ?",up_data)
+                conn.commit()
+                return True
+            except Exception:
+                return False
 
     def remove(self,qid):
         with sqlite3.connect("data/instance.db") as conn:

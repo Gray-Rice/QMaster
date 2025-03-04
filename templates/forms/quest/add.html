@@ -53,7 +53,7 @@
                     {% endif %}
                 {% endfor %}
                 <label>Correct Option:</label>
-                <input class="form-control" type="text" name="copt_{{ i }}" placeholder="Correct Option" required><br>
+                <input class="form-control" type="number" max="4" name="copt_{{ i }}" placeholder="Correct Option" required><br>
             </fieldset>
             {% endfor %}
             <button class="mt-3 mb-3 btn" style="background-color: white;color: #3b4f61;" type="submit">Submit Questions</button>

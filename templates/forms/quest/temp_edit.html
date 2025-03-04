@@ -1,0 +1,9 @@
+<form hx-post="/get/quest" hx-target="#editquest" hx-swap="outerHTML">
+    {% include 'list/quests.html' %} 
+    <input type="hidden" name="reqtype" value="edit">
+    <button class="mt-3 mb-3 btn" style="background-color: #3b4f61;color: white;" type="submit">Select</button>
+  </form>
+  <div>
+    <div id="editquest"></div>
+</div>
+  

@@ -170,14 +170,46 @@ def add_question():
         return redirect(url_for("admin_question"))
     return render_template("forms/quest/add.html",n=quest_d[1])
 
-@app.route("/get/add/quest",methods=["POST"])
-def get_addquest():
-    session["quest_d"] = [
+@app.route('/edit/question',methods=["POST"])
+@login_required
+def edit_quest():
+    up_data = [ request.form.get('qstatement').strip(),]
+    for j in range(0,4):
+        up_data.append( request.form.get(f'opt{j}').strip() )
+    up_data.extend( [int(request.form.get(f'copt')), session["quest_d"] ] )
+    if(sub.update(up_data)):
+        flash(f"Question updated sucessfully","info")
+    else:
+        flash("Error try again","info")
+    return redirect(url_for("admin_question"))
+
+@app.route("/delete/question", methods=["POST"])
+@login_required
+def del_quest():
+    quest_id = request.form.get("quest_id")
+    if(quest.remove(quest_id)):
+        flash(f"Question deleted sucessfully","info")
+    else:
+        flash("Error try again","info")
+    return redirect(url_for("admin_question"))
+
+@app.route("/get/quest",methods=["POST"])
+def get_quest():
+    reqtype = request.form.get("reqtype")
+    if(reqtype == "add"):
+        session["quest_d"] = [
         request.form.get("quiz_id"),
         int(request.form.get("n")),
-    ]
-    return redirect(url_for("add_question"))
+        ]
+        return redirect(url_for("add_question"))
 
+    elif(reqtype == "edit-temp"):
+        return render_template("forms/quest/temp_edit.html",questlist=quest.get(request.form.get("quiz_id")))
+    elif(reqtype == "del"):
+        return render_template("forms/quest/delete.html",questlist=quest.get(request.form.get("quiz_id")))
+    elif(reqtype == "edit"):
+        session["quest_d"] = request.form.get("quest_id")
+        return render_template("forms/quest/edit.html")
 
 ############################################################ Subject paths
 @app.route("/add/subject",methods=["POST"])
