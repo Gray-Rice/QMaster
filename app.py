@@ -104,36 +104,46 @@ def register():
 @app.route('/admin/')
 @login_required  
 def admin_dashboard():
-    return render_template("admin.html",user="Admin")
+    return render_template("admin/dashboard.html",user="Admin")
 
 @app.route('/admin/user')
 @login_required  
 def admin_user():
     if(current_user.role != "admin"):
         return "Error unauthorised"
-    return render_template("admin_user.html",user="Admin",userlist=uobj.get())
+    return render_template("admin/users.html",user="Admin",userlist=uobj.get())
 
 @app.route('/admin/subject')
 @login_required  
 def admin_subject():
     if(current_user.role != "admin"):
         return "Error unauthorised"
-    return render_template("admin_subject.html",user="Admin",sublist=sub.get())
+    return render_template("admin/subject.html",user="Admin",sublist=sub.get())
 
 @app.route('/admin/quiz')
 @login_required  
 def admin_quiz():
     if(current_user.role != "admin"):
         return "Error unauthorised"
-    return render_template("admin_quiz.html",user="Admin",sublist=sub.get())
+    return render_template("admin/quiz.html",user="Admin",sublist=sub.get())
 
-############################################################ Questions
+
 @app.route('/admin/questions')
 @login_required  
 def admin_question():
     if(current_user.role != "admin"):
         return "Error unauthorised"
-    return render_template("admin_questions.html",user="Admin",quizlist=quiz.get())
+    return render_template("admin/questions.html",user="Admin",quizlist=quiz.get())
+
+@app.route('/admin/chapter')
+@login_required  
+def admin_chapter():
+    if(current_user.role != "admin"):
+        return "Error unauthorised"
+    return render_template("admin/chapter.html",user="Admin",sublist=sub.get())
+
+
+############################################################ Questions
 
 @app.route('/add/questions/',methods=["GET","POST"])
 @login_required  
@@ -158,9 +168,9 @@ def add_question():
             mesg = "Error Try again"
         flash(mesg,"info")
         return redirect(url_for("admin_question"))
-    return render_template("forms/addquest.html",n=quest_d[1])
+    return render_template("forms/quest/add.html",n=quest_d[1])
 
-@app.route("/get/addquest",methods=["POST"])
+@app.route("/get/add/quest",methods=["POST"])
 def get_addquest():
     session["quest_d"] = [
         request.form.get("quiz_id"),
@@ -212,12 +222,6 @@ def rm_subject():
     return redirect(url_for("admin_subject"))
 
 ############################################################ Chapter Path
-@app.route('/admin/chapter')
-@login_required  
-def admin_chapter():
-    if(current_user.role != "admin"):
-        return "Error unauthorised"
-    return render_template("admin_chapter.html",user="Admin",sublist=sub.get())
 
 @app.route("/add/chapter",methods=["POST"])
 @login_required
@@ -261,15 +265,15 @@ def del_chapter():
         flash("Error try again","info")
     return redirect(url_for("admin_chapter"))
 
-@app.route("/get/editchap",methods=["POST"])
+@app.route("/get/edit/chapter",methods=["POST"])
 def get_editchap():
     sub_id = request.form.get("sub_id")
-    return render_template("forms/editchap.html",chaplist=chap.get(sub_id))
+    return render_template("forms/chapter/edit.html",chaplist=chap.get(sub_id))
 
-@app.route("/get/delchap",methods=["POST"])
+@app.route("/get/delete/chapter",methods=["POST"])
 def get_delchap():
     sub_id = request.form.get("sub_id")
-    return render_template("forms/delchap.html",chaplist=chap.get(sub_id))
+    return render_template("forms/chapter/delete.html",chaplist=chap.get(sub_id))
 
 ############################################################ Quiz path
 @app.route("/add/quiz",methods=["POST"])
@@ -316,30 +320,30 @@ def del_quiz():
         flash("Error try again","info")
     return redirect(url_for("admin_quiz"))
 
-@app.route("/get/addquiz",methods=["POST"])
+@app.route("/get/add/quiz",methods=["POST"])
 def get_addquiz():
     sub_id = request.form.get("sub_id")
-    return render_template("forms/addquiz.html",chaplist=chap.get(sub_id))
+    return render_template("forms/quiz/add.html",chaplist=chap.get(sub_id))
 
-@app.route("/get/editquiz",methods=["POST"])
+@app.route("/get/edit/quiz",methods=["POST"])
 def get_editquiz():
     chap_id = request.form.get("chap_id")
-    return render_template("forms/editquiz.html",quizlist=quiz.get(chap_id))
+    return render_template("forms/quiz/edit.html",quizlist=quiz.get(chap_id))
 
-@app.route("/get/delquiz",methods=["POST"])
+@app.route("/get/delete/quiz",methods=["POST"])
 def get_delquiz():
     chap_id = request.form.get("chap_id")
-    return render_template("forms/delquiz.html",quizlist=quiz.get(chap_id))
+    return render_template("forms/quiz/delete.html",quizlist=quiz.get(chap_id))
 
 @app.route("/get/temp/editquiz",methods=["POST"])
 def temp_editquiz():
     sub_id = request.form.get("sub_id")
-    return render_template("forms/qechap.html",chaplist=chap.get(sub_id))
+    return render_template("forms/quiz/temp_edit.html",chaplist=chap.get(sub_id))
 
 @app.route("/get/temp/delquiz",methods=["POST"])
 def temp_delquiz():
     sub_id = request.form.get("sub_id")
-    return render_template("forms/qdchap.html",chaplist=chap.get(sub_id))
+    return render_template("forms/quiz/temp_del.html",chaplist=chap.get(sub_id))
 
 ############################################################ User Path
 @app.route('/user/dashboard')
