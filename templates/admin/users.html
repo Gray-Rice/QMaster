@@ -35,10 +35,11 @@
     </nav>
 
     <div style="margin: auto; padding: 4%;">
+        {% include 'extra/response.html' %} 
         <!-- User -->
         <div class="card mb-4 shadow-lg rounded-4 d-flex" style="margin:auto; max-width: 80vw;">
             <h3 class="mt-4" style="margin: auto;" >Add User</h3>
-            <form hx-post="/register" hx-target="#register-response" hx-swap="innerHTML" hx-on:afterRequest="this.reset()">
+            <form action="/add/user" method="post">
             <input class="form-control mt-3" type="text" name="fullname" placeholder="Full Name" required>
             <input class="form-control mt-3" type="text" name="qualification" placeholder="Qualification">
             <input class="form-control mt-3" type="date" name="dob" required>
@@ -46,7 +47,6 @@
             <input class="form-control mt-3" id="password" type="password" name="password" placeholder="Password" required>
             <button class="mt-3 mb-3 btn submit-btn" type="submit">Add</button>
             </form>
-            <div id="register-response" class=" mb-3" style="margin: auto;"></div>
         </div>
         <div class="card mb-4 justify-content-center shadow-lg rounded-4 d-flex" style="margin:auto; max-width: 80vw;">
             <!-- User details -->

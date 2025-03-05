@@ -2,8 +2,10 @@
     {% include 'list/chapters.html' %} 
     <input class="form-control mt-3" type="text" name="name" placeholder="Quiz Name" required>
     <input class="form-control mt-3" type="text" name="description" placeholder="Description">
-    <input class="form-control mt-3" type="date" name="doq" required>
-    <input class="form-control mt-3" type="number" name="duration" step="0.5" placeholder="Quiz Duration (Minutes)" required>
+    <label style="padding-top: 1%;padding-left: 1%;font-weight: bold;">Fill Date and Time</label>
+    <input class="form-control mt-3" type="datetime-local" name="start" required>
+    <input class="form-control mt-3" type="datetime-local" name="end" required>
+    <input class="form-control mt-3" type="number" name="duration" placeholder="Quiz Duration (Minutes)" required>
     <button class="mt-3 mb-3 btn submit-btn" type="submit">Add</button>
 </form>
 

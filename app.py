@@ -29,6 +29,9 @@ class User(UserMixin):
 @login_manager.user_loader
 def load_user(username):
     role = dbm.get_role(username)
+    if(role == None):
+        flash("User Not Found","info")
+        redirect(url_for("login"))
     return User(username,role)
 
 # Routes
@@ -63,7 +66,6 @@ def login():
 
 @app.route("/register",methods=["POST","GET"])
 def register():
-    message = None
     if request.method == "POST":
         # JSON response
         if request.content_type == 'application/json':
@@ -88,16 +90,11 @@ def register():
         ]
         status = uobj.add(user_data)
         if(status):
-            flash("User added sucessfully","info")
-            if request.headers.get("HX-Request"):
-                return redirect(url_for("admin_user"))
+            flash("Registration sucessfully<br>Login to Proceed","info")
             return redirect("/login")
         else:
-            message= f"Username {user_data[0]} already exists."
-            if request.headers.get("HX-Request"):
-                return f"<p> {message} </p>"
-            return render_template("register.html",message=message)
-    return render_template("register.html",message=message)
+            return render_template("register.html",message=(f"Username {user_data[0]} already exists."))
+    return render_template("register.html")
 
 ################################################################### Protected Routes
 
@@ -169,6 +166,25 @@ def admin_chapter():
         return "Error unauthorised"
     return render_template("admin/chapter.html",user="Admin",sublist=sub.get())
 
+
+############################################################ User Management
+@app.route('/add/user/',methods=["GET","POST"])
+@login_required  
+def add_user():
+    user_data = [
+            request.form.get('username'),
+            request.form.get('password'),
+            request.form.get('fullname'),
+            request.form.get('qualification'),
+            request.form.get('dob'),
+        ]
+    status = uobj.add(user_data)
+    if(status):
+        flash("User added succesfully","info")
+        return redirect(url_for("admin_user"))
+    else:
+        flash(f"Username {user_data[0]} already exist.","info")
+        return redirect(url_for("admin_user"))
 
 ############################################################ Questions
 
@@ -298,7 +314,7 @@ def add_chapter():
     else:
         message =  f"Chapter {chap_data[0]}:\"{chap_data[1]}\" already exists"
     flash(message,"info")
-    return redirect("/admin/dashboard/chapter")
+    return redirect(url_for("admin_chapter"))
 
 @app.route("/edit/chapter", methods=["POST"])
 @login_required
@@ -344,7 +360,8 @@ def add_quiz():
     quiz_data = [
         request.form.get("chap_id").strip(),
         request.form.get("name").strip(),
-        request.form.get('doq'),
+        request.form.get('start').replace("T", " "),
+        request.form.get('end').replace("T", " "),
         request.form.get('duration'),
         request.form.get('description').strip(),
     ]
@@ -360,7 +377,8 @@ def add_quiz():
 def edit_quiz():
     up_data = [
         request.form.get("name"),
-        request.form.get("doq"),
+        request.form.get("start").replace("T", " "),
+        request.form.get('end').replace("T", " "),
         request.form.get("duration"),
         request.form.get("quiz_id")
     ]
@@ -405,6 +423,7 @@ def get_quiz():
 @login_required
 def logout():
     logout_user()
+    session.clear()
     flash("Logout successful.","info")
     return redirect("/login")
 

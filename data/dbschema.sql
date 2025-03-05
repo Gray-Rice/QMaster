@@ -35,8 +35,9 @@ CREATE TABLE IF NOT EXISTS Quiz (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     chapter_id INTEGER NOT NULL,
     name TEXT NOT NULL,
-    quiz_date DATE NOT NULL,
-    duration TEXT NOT NULL, -- this is HH:MM
+    start_date DATE NOT NULL,
+    end_date DATE NOT NULL,
+    duration TEXT NOT NULL,
     description TEXT,
     FOREIGN KEY (chapter_id) REFERENCES Chapter(id) ON DELETE CASCADE
 );

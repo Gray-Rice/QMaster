@@ -8,7 +8,8 @@ def get_role(username):
         cursor = conn.cursor()
         cursor.execute("SELECT role FROM Users WHERE username = ?",(username,))
         user = cursor.fetchone()
-        return user[0]
+        if(user != None):
+            return user[0]
 
 class users():
     def add(self,user):
@@ -181,7 +182,7 @@ class quiz:
         with sqlite3.connect("data/instance.db") as conn:
             try :
                 cursor = conn.cursor()
-                cursor.execute('''INSERT INTO Quiz (chapter_id,name,quiz_date,duration,description) VALUES (?,?,?,?,?)''',quiz_data)
+                cursor.execute('''INSERT INTO Quiz (chapter_id,name,start_date,end_date,duration,description) VALUES (?,?,?,?,?,?)''',quiz_data)
                 conn.commit()
                 print("Quiz Added")
                 return True

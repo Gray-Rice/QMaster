@@ -1,4 +1,8 @@
-import hashlib,os, pickle
+import hashlib
+import os
+import pickle
+import sqlite3
+from datetime import date
 
 def start_checkup():
     if(not setup_check()):
