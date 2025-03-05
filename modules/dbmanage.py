@@ -84,6 +84,13 @@ class subject:
             subjects = cursor.fetchall()
             return subjects
 
+    def name(self,id):
+        with sqlite3.connect("data/instance.db") as conn:
+            cursor = conn.cursor()
+            cursor.execute(f'''SELECT name from Subjects WHERE id = ?''',(id,))
+            subject = cursor.fetchone()
+            return subject[0]
+
     def remove(self,sub_id):
         with sqlite3.connect("data/instance.db") as conn:
             try:
@@ -120,12 +127,29 @@ class chapter:
             except sqlite3.IntegrityError :
                 return False
 
-    def get(self,sub_id):
+    def get(self,sub_id=None):
         with sqlite3.connect("data/instance.db") as conn:
             cursor = conn.cursor()
-            cursor.execute(f'''SELECT id,chap_code , name, description from Chapters WHERE subject_id = ?''',(sub_id,))
+            if(sub_id != None):
+                cursor.execute(f'''SELECT id,chap_code,name,description from Chapters WHERE subject_id = ?''',(sub_id,))
+            else:
+                cursor.execute("SELECT * from Chapters")
             chapters = cursor.fetchall()
             return chapters
+
+    def name(self,id):
+        with sqlite3.connect("data/instance.db") as conn:
+            cursor = conn.cursor()
+            cursor.execute(f'''SELECT name from Chapters WHERE id = ?''',(id,))
+            chapter = cursor.fetchone()
+            return chapter[0]
+
+    def getsubject(self,id):
+        with sqlite3.connect("data/instance.db") as conn:
+            cursor = conn.cursor()
+            cursor.execute(f'''SELECT subject_id from Chapters WHERE id = ?''',(id,))
+            subject = cursor.fetchone()
+            return subject[0]
 
     def remove(self,chap_id):
         with sqlite3.connect("data/instance.db") as conn:
@@ -174,7 +198,21 @@ class quiz:
                 cursor.execute("SELECT * FROM Quiz")
             quizes = cursor.fetchall()
             return quizes
-
+    
+    def name(self,id):
+        with sqlite3.connect("data/instance.db") as conn:
+            cursor = conn.cursor()
+            cursor.execute(f'''SELECT name from Quiz WHERE id = ?''',(id,))
+            quiz = cursor.fetchone()
+            return quiz[0]
+    
+    def getchapter(self,id):
+        with sqlite3.connect("data/instance.db") as conn:
+            cursor = conn.cursor()
+            cursor.execute(f'''SELECT chapter_id from Quiz WHERE id = ?''',(id,))
+            chapter = cursor.fetchone()
+            return chapter[0]
+    
     def update(self,up_data):
         with sqlite3.connect("data/instance.db") as conn:
             cursor = conn.cursor()
@@ -198,6 +236,7 @@ class quiz:
             except Exception as e:
                 print("Exception: "+e)
                 return False
+
 #  Questions
 class questions:
     def add(self,questions):
@@ -213,16 +252,16 @@ class questions:
                 print("Exception: "+e)
                 return False
 
-    def get(self,quiz_id):
+    def get(self,quiz_id=None):
         with sqlite3.connect("data/instance.db") as conn:
-            try:
-                cursor = conn.cursor()
+            # try:
+            cursor = conn.cursor()
+            if(quiz_id != None):
                 cursor.execute(f'''SELECT * FROM Questions WHERE quiz_id = ?''',(quiz_id,))
-                questions = cursor.fetchall()
-                return questions
-            except Exception as e:
-                print("Questions get exception: "+ e)
-                return None
+            else:
+                cursor.execute("SELECT * FROM Questions")
+            questions = cursor.fetchall()
+            return questions
 
     def update(self,up_data):
         with sqlite3.connect("data/instance.db") as conn:

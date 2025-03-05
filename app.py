@@ -4,6 +4,7 @@ from flask_login import LoginManager, UserMixin, login_user, login_required, log
 # User-defined modules
 import modules.dbmanage as dbm
 import modules.security as sec
+import modules.utilities as util
 
 uobj = dbm.users()
 sub = dbm.subject()
@@ -100,6 +101,18 @@ def register():
 
 ################################################################### Protected Routes
 
+@app.route('/search',methods=["GET","POST"])
+@login_required  
+def search():
+    if(request.method == "GET"):
+        user = session["user"]
+        return render_template("search/search.html",role=user["role"],user=user["fname"])
+    query = [request.form.get("category"),request.form.get("keyword")]
+    if(current_user.role != "admin"):
+        return util.search(query)
+    else:
+        return util.search(query,True)
+
 ############################################################ User Path
 @app.route('/user/')
 @login_required  
@@ -116,6 +129,8 @@ def user_quiz(quiz_id):
 @app.route('/admin/')
 @login_required  
 def admin_dashboard():
+    if(current_user.role != "admin"):
+        return "Error unauthorised <a href=/user>Go Back</a>"
     return render_template("admin/dashboard.html",user="Admin")
 
 @app.route('/admin/user')

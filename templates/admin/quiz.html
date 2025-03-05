@@ -18,6 +18,7 @@
             <a href="/admin/subject" style="padding-right: 1%;color: white;"> Subject</a>
             <a href="/admin/chapter" style="padding-right: 1%;color: white;"> Chapter</a>
             <a href="/admin/questions" style="padding-right: 1%;color: white;"> Questions</a>
+            <a href="/search" style="padding-right: 1%;color: white;"> Search</a>
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" style="color: white;">
@@ -41,7 +42,7 @@
                 <form hx-post="/get/quiz" hx-target="#addchap" hx-swap="outerHTML">
                     {% include 'list/subjects.html' %} 
                     <input type="hidden" name="reqtype" value="add">
-                    <button class="mt-3 mb-3 btn" style="background-color: #3b4f61;color: white;" type="submit">Fetch Chapters</button>
+                    <button class="mt-3 mb-3 btn submit-btn" type="submit">Fetch Chapters</button>
                 </form>
                 <div>
                     <div id="addchap"></div>
@@ -53,7 +54,7 @@
                 <form hx-post="/get/quiz" hx-target="#editchap" hx-swap="outerHTML">
                     {% include 'list/subjects.html' %} 
                     <input type="hidden" name="reqtype" value="edit-temp">
-                    <button class="mt-3 mb-3 btn" style="background-color: #3b4f61;color: white;" type="submit">Fetch Chapters</button>
+                    <button class="mt-3 mb-3 btn submit-btn" type="submit">Fetch Chapters</button>
                 </form>
                 <div>
                     <div id="editchap"></div>
@@ -68,7 +69,7 @@
                 <form  hx-post="/get/quiz" hx-target="#delchap" hx-swap="outerHTML">
                     {% include 'list/subjects.html' %}
                     <input type="hidden" name="reqtype" value="del-temp">
-                    <button class="mt-3 mb-3 btn" style="background-color: #3b4f61;color: white;" type="submit">Fetch Chapters</button>
+                    <button class="mt-3 mb-3 btn submit-btn" type="submit">Fetch Chapters</button>
                 </form>
                 <div>
                     <div id="delchap"></div>

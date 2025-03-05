@@ -7,18 +7,21 @@
     <link rel="stylesheet" href="/static/styles.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/htmx.org@1.9.2"></script>
 </head>
 <body>
     <div class="blur"></div>
     <nav class="navbar navbar-expand-lg navbar-dark fixed-top" style="background-color: #3b4f61;">
         <div class="container-fluid">
+            {% if role == "admin" %}
             <a class="navbar-brand" href="/admin">Dashboard</a>
             <a href="/admin/user" style="padding-right: 1%;color: white;"> User</a>
             <a href="/admin/subject" style="padding-right: 1%;color: white;"> Subject</a>
-            <a href="/admin/chapter" style="padding-right: 1%;color: white;"> Chapter</a>
             <a href="/admin/quiz" style="padding-right: 1%;color: white;"> Quiz</a>
             <a href="/admin/questions" style="padding-right: 1%;color: white;"> Questions</a>
-            <a href="/search" style="padding-right: 1%;color: white;"> Search</a>
+            {% else %}
+            <a class="navbar-brand" href="/user">Dashboard</a>
+            {% endif %}
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" style="color: white;">
@@ -33,8 +36,23 @@
             </ul>
         </div>
     </nav>
-    <div style="padding: 5%;">
-        Statistics or Display details
+    <div style="margin: auto;padding: 5%;max-width: 50vw;">
+    <form class="form-control" hx-post="/search" hx-target="#results" method="GET">
+        <label class="mt-2">Enter Keyword:</label>
+        <input class="form-control  mb-3" type="text" name="keyword" placeholder="username,subject ID,quiz....." required>
+        <label>Category:</label>
+        <select class="form-select" name="category">
+            <option value="" selected disabled>Select Category</option>
+            {% if role == "admin" %}
+            <option value="user">User</option>
+            {% endif %}
+            <option value="subject">Subject</option>
+            <option value="chapter">Chapter</option>
+            <option value="quiz">Quiz</option>
+            <option value="question">Questions</option>
+        </select>
+        <button class="mt-3 mb-2 btn submit-btn">Search</button>
+    </form>
+    <div id="results"></div>
     </div>
 </body>
-</html>

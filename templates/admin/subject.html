@@ -18,6 +18,7 @@
             <a href="/admin/chapter" style="padding-right: 1%;color: white;"> Chapter</a>
             <a href="/admin/quiz" style="padding-right: 1%;color: white;"> Quiz</a>
             <a href="/admin/questions" style="padding-right: 1%;color: white;"> Questions</a>
+            <a href="/search" style="padding-right: 1%;color: white;"> Search</a>
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" style="color: white;">
@@ -50,7 +51,7 @@
                 {% include 'list/subjects.html' %} 
                 <input class="form-control mt-3" type="text" name="subject" placeholder="New Subject Name" required>
                 <input class="form-control mt-3" type="text" name="description" placeholder="New Description" required>
-                <button class="submit-btn mt-3 mb-3 btn btn-primary" type="submit">Update</button>
+                <button class="submit-btn mt-3 mb-3 btn" type="submit">Update</button>
             </form>
         </div>
 
@@ -58,7 +59,7 @@
             <h3 class="mt-4" style="margin: auto;">Delete Subject</h3>
             <form action="/delete/subject" method="post" onsubmit="return confirmDelete();">
                 {% include 'list/subjects.html' %} 
-                <button class="submit-btn mt-3 mb-3 btn btn-primary" type="submit">Delete</button>
+                <button class="submit-btn mt-3 mb-3 btn" type="submit">Delete</button>
             </form>
         </div>
         <script>
