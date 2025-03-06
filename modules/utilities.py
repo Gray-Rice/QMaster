@@ -1,5 +1,15 @@
 from flask import render_template
 import modules.dbmanage as dbm
+from datetime import datetime
+
+def timegate(qlist):
+    # [1, 1, 'Quiz1', '2025-03-01 09:00', '2025-03-14 12:59', '1', 'Introduction to quiz system']
+    cur = datetime.now()
+    for i in qlist:
+        start = datetime.strptime(i[3], "%Y-%m-%d %H:%M")
+        end = datetime.strptime(i[4], "%Y-%m-%d %H:%M")
+        i.append( cur >= start and cur <= end )
+    return qlist
 
 def check(key,data):
     for x in data:

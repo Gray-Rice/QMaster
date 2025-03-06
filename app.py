@@ -115,7 +115,9 @@ def search():
 @login_required  
 def user_dashboard():
     user = session["user"]
-    return render_template("user/dashboard.html",user=user["fname"],sublist=sub.get(),quizlist=quiz.get())
+    q = util.timegate([ list(x) for x in  quiz.get()])
+    print(q)
+    return render_template("user/dashboard.html",user=user["fname"],sublist=sub.get(),quizlist=q)
 
 @app.route('/user/quiz/<int:quiz_id>')
 @login_required 
