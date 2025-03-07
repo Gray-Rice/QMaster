@@ -35,12 +35,21 @@ def quizswap(id):
     temp.extend(chapswap(obj.getchapter(id)))
     return temp
 
-def process_quest(q):
+def process_quest(q,rm=False):
     copt = q[-1]
-    opt = q[3:-1]
+    opt = [ x for x in q[3:-1] if(x != "" or not rm)]
     q = q[:3]
     q.extend([opt,copt])
     return q
+
+def strip_ans(qlist):
+    qs = []
+    ans = {}
+    for i in qlist:
+        qs.append( process_quest(list(i),True)[:-1] )
+        ans[i[0]] = i[-1]
+    return qs,ans
+
 
 def search(query,admin=False):
     match query[0].lower():

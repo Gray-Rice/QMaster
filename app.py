@@ -122,7 +122,10 @@ def user_dashboard():
 @app.route('/user/quiz/<int:quiz_id>')
 @login_required 
 def user_quiz(quiz_id):
-    return render_template("user/quiz.html")
+    qlist,ans = util.strip_ans(quest.get(quiz_id))
+    print(qlist)
+    print(ans)
+    return render_template("user/quiz.html",user=session["user"],qlist=qlist)
 
 ############################################################ Admin Paths
 @app.route('/admin/')
@@ -418,7 +421,6 @@ def get_quiz():
     elif(reqtype == "del"):
         chap_id = request.form.get("chap_id")
         return render_template("forms/quiz/delete.html",quizlist=quiz.get(chap_id))
-
 
 
 @app.route('/logout')
