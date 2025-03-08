@@ -1,5 +1,6 @@
 from flask import Flask, request, render_template, redirect, url_for, flash, jsonify, session
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
+import json
 
 # User-defined modules
 import modules.dbmanage as dbm
@@ -98,17 +99,24 @@ def register():
 
 ################################################################### Protected Routes
 
-@app.route('/search',methods=["GET","POST"])
-@login_required  
-def search():
-    if(request.method == "GET"):
-        user = session["user"]
-        return render_template("search/search.html",role=user["role"],user=user["fname"])
-    query = [request.form.get("category"),request.form.get("keyword")]
-    if(current_user.role != "admin"):
-        return util.search(query)
-    else:
-        return util.search(query,True)
+@app.route('/score/save/<int:quiz_id>/',methods=['POST'])
+@login_required 
+def store_quiz(quiz_id):
+    user_id = session["user"]["id"]
+    qlist,akey = session["quiz_d"]
+    uans = {}
+    report = {}
+    score = 0
+    for i in akey.keys():
+        temp = [ request.form.get(i),akey[i] ]
+        uans[i]  = temp[0]
+        temp.append(uans[i] == akey[i])
+        if(temp[-1]):
+            score += 1
+        report[i] = temp
+    
+    return f"saved for {report}"
+
 
 ############################################################ User Path
 @app.route('/user/')
@@ -123,9 +131,22 @@ def user_dashboard():
 @login_required 
 def user_quiz(quiz_id):
     qlist,ans = util.strip_ans(quest.get(quiz_id))
-    print(qlist)
-    print(ans)
-    return render_template("user/quiz.html",user=session["user"],qlist=qlist)
+    session["quiz_d"] = [qlist,ans]
+    return render_template("user/quiz.html",user=session["user"],qlist=qlist,quiz_id=quiz_id)
+
+############################################################ Search
+
+@app.route('/search',methods=["GET","POST"])
+@login_required  
+def search():
+    if(request.method == "GET"):
+        user = session["user"]
+        return render_template("search/search.html",role=user["role"],user=user["fname"])
+    query = [request.form.get("category"),request.form.get("keyword")]
+    if(current_user.role != "admin"):
+        return util.search(query)
+    else:
+        return util.search(query,True)
 
 ############################################################ Admin Paths
 @app.route('/admin/')

@@ -46,8 +46,9 @@ def strip_ans(qlist):
     qs = []
     ans = {}
     for i in qlist:
-        qs.append( process_quest(list(i),True)[:-1] )
-        ans[i[0]] = i[-1]
+        quest = process_quest(list(i),True)[:-1]
+        qs.append( quest )
+        ans[i[0]] = quest[-1][i[-1]-1]
     return qs,ans
 
 

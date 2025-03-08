@@ -32,7 +32,7 @@
         <div class="text-center">
             <h2 class="mt-3 mb-3">Quiz</h2>
         </div>
-        <form action="" method="post" style="margin: auto;max-width: 50vw;">
+        <form action="/score/save/{{ quiz_id }}/" method="post" style="margin: auto;max-width: 50vw;">
             {% for q in qlist  %}
             <div class="">
             <fieldset class="form-control mb-3 border-dark" style="margin:auto ;max-height: 60vh;">
@@ -40,7 +40,7 @@
                 <label class="mt-1" >Options :</label><br>
                 <div class="mb-2" style="padding-left: 1%;">
                     {% for i in q[3] %}
-                        <input class="" type="radio" name="opt{{q[0]}}" value="{{ i }}" > {{i}}<br>
+                        <input class="" type="radio" name="{{q[0]}}" value="{{ i }}" > {{i}}<br>
                     {% endfor %}
                 </div>
             </fieldset>
