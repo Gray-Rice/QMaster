@@ -1,6 +1,6 @@
 from flask import Flask, request, render_template, redirect, url_for, flash, jsonify, session
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
-import json
+from ast import literal_eval
 
 # User-defined modules
 import modules.dbmanage as dbm
@@ -12,7 +12,7 @@ sub = dbm.subject()
 chap = dbm.chapter()
 quiz = dbm.quiz()
 quest = dbm.questions()
-sc = dbm.score()
+sco = dbm.score()
 
 app = Flask(__name__)
 app.secret_key = "secret_key_add_method_to_replace_with_env"
@@ -35,8 +35,6 @@ def load_user(username):
         redirect(url_for("login"))
     return User(username,role)
 
-# Routes
-# @app.route("",methods=["POST","GET"])
 
 @app.route("/", methods=["GET"])
 def home():
@@ -68,19 +66,6 @@ def login():
 @app.route("/register",methods=["POST","GET"])
 def register():
     if request.method == "POST":
-        # JSON response
-        if request.content_type == 'application/json':
-            data = request.json
-            user_data = [
-                data.get('username'),
-                data.get('password'),
-                data.get('fullname'),
-                data.get('qualification'),
-                data.get('dob')
-            ]
-            status = dbm.add_user(user_data)
-            return jsonify({"status": status})
-
         # POST response
         user_data = [
             request.form.get('username'),
@@ -99,24 +84,62 @@ def register():
 
 ################################################################### Protected Routes
 
+@app.route('/user/report/<int:report_id>/')
+@login_required 
+def view_report(report_id):
+    at = sco.get_report(report_id)
+    score = at[1]
+    ratio = literal_eval(at[2])
+    report = literal_eval(at[3])
+    time = at[4]
+    return render_template("score/report.html",user=session["user"]["fname"],quiz=quiz.name(at[0]),score=score,ratio=ratio,report=report,time=time)
+
+@app.route('/user/scores/')
+@login_required
+def view_score():
+    user_id = session["user"]["id"]
+    alist = {}
+    for i in sco.get(user_id):
+        temp = [ i[1],
+            i[2],
+            i[3],
+            literal_eval(i[4])
+        ]
+        key = quiz.name(i[0])
+        if(key not in alist):
+            alist[key] = [temp,]
+        else:
+            alist[key].append(temp)
+    if(alist == []):
+        alist=None
+    return render_template("score/attempts.html",alist=alist)
+
 @app.route('/score/save/<int:quiz_id>/',methods=['POST'])
 @login_required 
 def store_quiz(quiz_id):
     user_id = session["user"]["id"]
-    qlist,akey = session["quiz_d"]
+    qlist,akey = session["quiz_con"]
     uans = {}
     report = {}
     score = 0
+    unat = 0
+    j=0
     for i in akey.keys():
         temp = [ request.form.get(i),akey[i] ]
         uans[i]  = temp[0]
         temp.append(uans[i] == akey[i])
         if(temp[-1]):
             score += 1
-        report[i] = temp
-    
-    return f"saved for {report}"
-
+        report[i] = [qlist[j][2]]+ temp
+        j+=1
+        if (uans[i] == None):
+            unat += 1
+    ratio = [len(akey),unat]
+    score_data = [quiz_id ,user_id, str(report),score,str(ratio)]
+    if(sco.add(score_data)):
+        return render_template("score/submit.html",user=session["user"]["fname"],quiz_id=quiz_id,score=score,ratio=ratio,report=report)
+    else:
+        return "Error ocured try again"
 
 ############################################################ User Path
 @app.route('/user/')
@@ -124,6 +147,7 @@ def store_quiz(quiz_id):
 def user_dashboard():
     user = session["user"]
     q = util.timegate([ list(x) for x in  quiz.get()])
+    q = util.parse_name(q)
     print(q)
     return render_template("user/dashboard.html",user=user["fname"],sublist=sub.get(),quizlist=q)
 
@@ -131,7 +155,7 @@ def user_dashboard():
 @login_required 
 def user_quiz(quiz_id):
     qlist,ans = util.strip_ans(quest.get(quiz_id))
-    session["quiz_d"] = [qlist,ans]
+    session["quiz_con"] = [qlist,ans]
     return render_template("user/quiz.html",user=session["user"],qlist=qlist,quiz_id=quiz_id)
 
 ############################################################ Search
@@ -226,9 +250,9 @@ def add_question():
         quest_data = []
         for i in range (0,n):
             # (quiz_id, qstatement, opt1,opt2,opt3,opt4,copt)
-            temp = [ quiz_id,request.form.get(f'qstatement_{i}').strip()]
+            temp = [ quiz_id,request.form.get(f'qstatement_{i}').strip().capitalize()]
             for j in range(0,4):
-                temp.append( request.form.get(f'opt{i}_{j}').strip() )
+                temp.append( request.form.get(f'opt{i}_{j}').strip().capitalize() )
             temp.append( int(request.form.get(f'copt_{i}')) )
             quest_data.append(temp)
         if(quest.add(quest_data)):

@@ -11,7 +11,7 @@
 <body>
     <div class="blur"></div>
     <div class="mb-3">
-        {% include 'extra/navbar.html' %}
+        {% include 'user/navbar.html' %}
     </div>
     <div style="padding: 4%;margin: auto;">
        <p >Welcome {{user}}</p> 
@@ -39,7 +39,8 @@
                 <details class="card mt-2 mb-2">
                     <summary>{{ q[2] }}</summary>
                     <div style="padding-left: 2%;">
-                        <p><strong>Chapter ID:</strong> {{ q[1] }}</p>
+                        <p><strong>Subject:</strong> {{ q[8] }}</p>
+                        <p><strong>Chapter Name:</strong> {{ q[1] }}</p>
                         <p><strong>Start:</strong> {{ q[3] }} </p>
                         <p><strong>End:</strong> {{ q[4] }} </p>
                         <p><strong>Duration:</strong> {{ q[5] }} minute(s)</p>
@@ -49,7 +50,7 @@
                         {% else %}
                         <p class="mt-3 mb-3 card text-center" style="max-width: 10vw;">Quiz not available</p>
                         {% endif %}
-                        <a href="/user/score/{{ q[0] }}" class="mt-1 mb-3 btn submit-btn">See Scores</a>
+                        <a href="/user/scores/" class="mt-1 mb-3 btn submit-btn">See Scores</a>
                     </div>
                 </details>
                 {% endfor %}

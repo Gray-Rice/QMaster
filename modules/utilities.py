@@ -2,6 +2,17 @@ from flask import render_template
 import modules.dbmanage as dbm
 from datetime import datetime
 
+
+
+def parse_name(q):
+    chap = dbm.chapter()
+    sub = dbm.subject()
+    for i in q:
+        id = chap.getsubject(i[1])
+        i.append(sub.name(id))
+        i[1] = chap.name(i[1])
+    return q
+
 def timegate(qlist):
     # [1, 1, 'Quiz1', '2025-03-01 09:00', '2025-03-14 12:59', '1', 'Introduction to quiz system']
     cur = datetime.now()

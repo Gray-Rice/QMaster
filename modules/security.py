@@ -42,11 +42,10 @@ def create_instance():
                 print("Admin added with defaults.")
             with open("data/admin_lock.pkl","wb") as lock:
                 pickle.dump(setup,lock)
-    
     except FileNotFoundError:
         print("Schema not found verify if all files are present and correct")
 
-def hashpwd(password):
+def hashpwd(password): 
     return hashlib.sha256(password.encode()).hexdigest()
     
 def verify_hash(password, pwdhash):

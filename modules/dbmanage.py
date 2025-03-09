@@ -293,18 +293,28 @@ class score:
         with sqlite3.connect("data/instance.db") as conn:
             try:
                 cursor = conn.cursor()
-                cursor.execute(f'''INSERT INTO Score (quiz_id, user_id, time_stamp, total_score) VALUES (?,?,?,?)''',score_data)
+                cursor.execute(f'''INSERT INTO Scores (quiz_id, user_id, report,marks,ratio) VALUES (?,?,?,?,?)''',score_data)
                 conn.commit()
+                print("Attempt Recorded")
                 return True
             except sqlite3.IntegrityError :
                 return False
+
+    def get_report(self,report_id):
+        with sqlite3.connect("data/instance.db") as conn:
+            cursor = conn.cursor()
+            cursor.execute(f'''SELECT quiz_id,marks,ratio,report,time_stamp FROM Scores WHERE id = ?''',(report_id,))
+            report = cursor.fetchall()
+            return report[0]
 
     def get(self,user_id=None,quiz_id=None):
         with sqlite3.connect("data/instance.db") as conn:
             cursor = conn.cursor()
             if( user_id == None and quiz_id != None):
-                cursor.execute(f'''SELECT * FROM Score WHERE quiz_id = ?''',(quiz_id,))
+                cursor.execute(f'''SELECT * FROM Scores WHERE quiz_id = ?''',(quiz_id,))
             elif( user_id != None and quiz_id == None):
-                cursor.execute(f'''SELECT * FROM Score WHERE user_id = ?''',(user_id,))
+                cursor.execute(f'''SELECT quiz_id,id,time_stamp,marks,ratio FROM Scores WHERE user_id = ?''',(user_id,))
+            elif(user_id and quiz_id):
+                cursor.execute(f'''SELECT * FROM Scores WHERE quiz_id = ? AND user_id = ?''',(quiz_id,user_id))
             scores = cursor.fetchall()
             return scores
