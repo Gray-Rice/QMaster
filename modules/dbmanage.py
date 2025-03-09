@@ -190,11 +190,13 @@ class quiz:
                 print("Exception: "+e)
                 return False
 
-    def get(self,chapter_id=None):
+    def get(self,chapter_id=None,quiz_id=None):
         with sqlite3.connect("data/instance.db") as conn:
             cursor = conn.cursor()
             if(chapter_id != None):
                 cursor.execute(f'''SELECT * FROM Quiz WHERE chapter_id = ?''',(chapter_id,))
+            elif(quiz_id != None):
+                cursor.execute(f'''SELECT * FROM Quiz WHERE id = ?''',(quiz_id,))
             else:
                 cursor.execute("SELECT * FROM Quiz")
             quizes = cursor.fetchall()

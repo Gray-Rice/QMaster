@@ -136,6 +136,7 @@ def store_quiz(quiz_id):
             unat += 1
     ratio = [len(akey),unat]
     score_data = [quiz_id ,user_id, str(report),score,str(ratio)]
+    return render_template("score/submit.html",user=session["user"]["fname"],quiz_id=quiz_id,score=score,ratio=ratio,report=report)
     if(sco.add(score_data)):
         return render_template("score/submit.html",user=session["user"]["fname"],quiz_id=quiz_id,score=score,ratio=ratio,report=report)
     else:
@@ -154,9 +155,10 @@ def user_dashboard():
 @app.route('/user/quiz/<int:quiz_id>')
 @login_required 
 def user_quiz(quiz_id):
+    dur = int(quiz.get(quiz_id=quiz_id)[0][5]) * 60 
     qlist,ans = util.strip_ans(quest.get(quiz_id))
     session["quiz_con"] = [qlist,ans]
-    return render_template("user/quiz.html",user=session["user"],qlist=qlist,quiz_id=quiz_id)
+    return render_template("user/quiz.html",user=session["user"],qlist=qlist,quiz_id=quiz_id,dur=dur)
 
 ############################################################ Search
 
