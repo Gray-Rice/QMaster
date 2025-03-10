@@ -1,7 +1,72 @@
-from flask import render_template
+from flask import render_template,jsonify
 import modules.dbmanage as dbm
 from datetime import datetime
+from ast import literal_eval
 
+class apitools():
+    @staticmethod
+    def get_sub():
+        obj = dbm.subject()
+        out = []
+        for i in obj.get():
+            temp = {}
+            temp["id"] = i[0]
+            temp["code"] = i[1]
+            temp["name"] = i[2]
+            temp["decription"] = i[3]
+            out.append(temp)
+        return out
+    
+    @staticmethod
+    def get_chap():
+        obj = dbm.chapter()
+        sub = dbm.subject()
+        out = []
+        for i in obj.get():
+            temp = {}
+            temp["id"] = i[0]
+            temp["subject"] = subswap(i[0])
+            temp["code"] = i[2]
+            temp["name"] = i[3]
+            temp["decription"] = i[4]
+            out.append(temp)
+        return out
+    
+    @staticmethod
+    def get_quiz():
+        obj = dbm.quiz()
+        out = []
+        for i in obj.get():
+            temp = {}
+            temp["id"] = i[0]
+            temp["chapter"],temp["subject"] = chapswap(i[1])
+            temp["name"] = i[2]
+            temp["start_date"] = i[3]
+            temp["end_date"] = i[4]
+            temp["duration"] = i[5]
+            temp["decription"] = i[6]
+            out.append(temp)
+        return out
+
+    @staticmethod
+    def get_score():
+        obj = dbm.score()
+        out = {}
+        for i in obj.get():
+            temp = {}
+            temp["id"] = i[0]
+            temp["name"],temp["chapter"],temp["subject"] = quizswap(i[1])
+            temp["time"] = i[3]
+            temp["score"] = i[5]
+            temp["total"],temp["unattempted"] = literal_eval(i[6])
+            temp["incorrect"] = temp["total"] - temp["score"]
+            temp["report"] = literal_eval(i[4])
+            user = userswap(i[2])
+            if(user in out.keys()):
+                out[user].append(temp)
+            else:
+                out[user] = [temp,]
+        return out
 
 
 def parse_name(q):
@@ -29,6 +94,10 @@ def check(key,data):
             if(key in i or key == i):
                 return x
     return False
+
+def userswap(id):
+    obj = dbm.users()
+    return obj.username(id)
 
 def subswap(id):
     obj = dbm.subject()

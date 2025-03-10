@@ -1,11 +1,13 @@
 from flask import Flask, request, render_template, redirect, url_for, flash, jsonify, session
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
+from flask_restful import Resource, Api
 from ast import literal_eval
 
 # User-defined modules
 import modules.dbmanage as dbm
 import modules.security as sec
 import modules.utilities as util
+from modules.utilities import apitools
 
 uobj = dbm.users()
 sub = dbm.subject()
@@ -16,6 +18,7 @@ sco = dbm.score()
 
 app = Flask(__name__)
 app.secret_key = "secret_key_add_method_to_replace_with_env"
+api = Api(app)
 
 # Flask-Login setup
 login_manager = LoginManager(app)
@@ -82,6 +85,42 @@ def register():
             return render_template("register.html",message=(f"Username {user_data[0]} already exists."))
     return render_template("register.html")
 
+################################################################### API
+
+class subject_api(Resource):
+    def get(self):
+        subjects = apitools.get_sub()
+        if not subjects:
+            return jsonify({"error": "No subjects found"}), 404
+        return jsonify({"subjects": subjects})
+
+class chapter_api(Resource):
+    def get(self):
+        chapters = apitools.get_chap()
+        if not chapters:
+            return jsonify({"error": "No chapters found"}), 404
+        return jsonify({"chapters": chapters})
+
+class quiz_api(Resource):
+    def get(self):
+        quizzes = apitools.get_quiz()
+        if not quizzes:
+            return jsonify({"error": "No Quiz found"}), 404
+        return jsonify({"quizzes":quizzes})
+
+class score_api(Resource):
+    def get(self):
+        scores = apitools.get_score()
+        if not scores:
+            return jsonify({"error": "No scoress found"}), 404
+        return jsonify({"scores": scores})
+
+api.add_resource(subject_api, "/api/subjects")
+api.add_resource(chapter_api, "/api/chapters")
+api.add_resource(quiz_api, "/api/quiz")
+api.add_resource(score_api, "/api/scores")
+
+
 ################################################################### Protected Routes
 
 @app.route('/user/report/<int:report_id>/')
@@ -136,7 +175,6 @@ def store_quiz(quiz_id):
             unat += 1
     ratio = [len(akey),unat]
     score_data = [quiz_id ,user_id, str(report),score,str(ratio)]
-    return render_template("score/submit.html",user=session["user"]["fname"],quiz_id=quiz_id,score=score,ratio=ratio,report=report)
     if(sco.add(score_data)):
         return render_template("score/submit.html",user=session["user"]["fname"],quiz_id=quiz_id,score=score,ratio=ratio,report=report)
     else:

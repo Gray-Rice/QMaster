@@ -35,6 +35,12 @@ class users():
                     cursor.execute(f"SELECT id,username,fullname,qualification,dob from Users WHERE username = ?",(username,))
                     users = cursor.fetchone()
                 return users
+    def username(self,user_id):
+        with sqlite3.connect("data/instance.db") as conn:
+            cursor = conn.cursor()
+            cursor.execute(f'''SELECT username from Users WHERE id = ?''',(user_id,))
+            user = cursor.fetchone()
+            return user[0]
 
     def search(self,username=None,id=None):
         with sqlite3.connect("data/instance.db") as conn:
@@ -318,5 +324,7 @@ class score:
                 cursor.execute(f'''SELECT quiz_id,id,time_stamp,marks,ratio FROM Scores WHERE user_id = ?''',(user_id,))
             elif(user_id and quiz_id):
                 cursor.execute(f'''SELECT * FROM Scores WHERE quiz_id = ? AND user_id = ?''',(quiz_id,user_id))
+            else:
+                cursor.execute("SELECT * FROM Scores")
             scores = cursor.fetchall()
             return scores
