@@ -169,7 +169,7 @@ def store_quiz(quiz_id):
         temp.append(uans[i] == akey[i])
         if(temp[-1]):
             score += 1
-        report[i] = [qlist[j][2]]+ temp
+        report[j+1] = [qlist[j][2]]+ temp
         j+=1
         if (uans[i] == None):
             unat += 1
