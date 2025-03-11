@@ -1,0 +1,10 @@
+<select class="form-select mt-3" name="user_id" required>
+    {% if userlist %}
+        <option value="" disabled selected>Select a User</option>
+        {% for i in userlist %}
+            <option value="{{ i[0] }}">{{ i[1] }} - {{ i[2] }}</option>
+        {% endfor %}
+    {% else %}
+        <option value="" disabled>No Users available</option>
+    {% endif %}
+</select>

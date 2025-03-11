@@ -59,20 +59,20 @@ class users():
                 print("User not found.")
                 return None
 
-    def remove(self,username):
-        if username == "admin":
+    def remove(self,user_id):
+        if user_id == 0:
                 print("Cannot delete the admin user!")
                 return
         with sqlite3.connect("data/instance.db") as con:
-            cur = con.cursor()
-            cur.execute("SELECT username FROM Users WHERE username = ?",(username,))
-            user = cur.fetchone()
-            if not user:
-                print(f"User not found.")
-                return
-            cur.execute("DELETE FROM Users WHERE username = ?", (username,))
-            con.commit()
-            print(f"User '{username}' deleted successfully.")
+            try:
+                cur = con.cursor()
+                cur.execute("DELETE FROM Users WHERE id = ?", (user_id,))
+                con.commit()
+                print(f"User deleted successfully.")
+                return True
+            except Exception as e:
+                print("Exception : "+str(e))
+                return False
 
 class subject:
     def add(self,sub_data):

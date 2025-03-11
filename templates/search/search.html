@@ -19,6 +19,7 @@
             <a href="/admin/subject" style="padding-right: 1%;color: white;"> Subject</a>
             <a href="/admin/quiz" style="padding-right: 1%;color: white;"> Quiz</a>
             <a href="/admin/questions" style="padding-right: 1%;color: white;"> Questions</a>
+            <a href="/admin/api" style="padding-right: 1%;color: white;"> API</a>
             {% else %}
             <a class="navbar-brand" href="/user">Dashboard</a>
             <a href="/user/scores/" style="color: white;">Scores</a>
@@ -29,8 +30,6 @@
                         {{ user }}
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end">
-                        <li><a class="dropdown-item" href="/profile">Profile</a></li>
-                        <li><hr class="dropdown-divider"></li>
                         <li><a class="dropdown-item text-danger" href="/logout">Logout</a></li>
                     </ul>
                 </li>

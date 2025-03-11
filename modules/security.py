@@ -1,9 +1,13 @@
-import hashlib
-import os
-import pickle
-import sqlite3
+import hashlib, os, pickle, sqlite3, secrets, json
 from datetime import date
-import secrets
+import modules.dbmanage as dbm
+
+def get_secrets():
+    try:
+        with open("data/secrets.json", "r") as file:
+            return json.load(file)
+    except Exception as e:
+        print("Secrets file missing, Exception: "+str(e))
 
 def create_token(user_id):
     with sqlite3.connect("data/instance.db") as con:
@@ -12,22 +16,49 @@ def create_token(user_id):
             cur = con.cursor()
             cur.execute("INSERT INTO Api (user_id,token) VALUES (?,?)",(user_id,token))
             con.commit()
-            print("Created API")
+            print("Created API Token")
             return True
         except Exception as e:
             print("API creation error : "+str(e))
             return False
 
-def get_token(user_id):
+def rm_token(user_id):
+    with sqlite3.connect("data/instance.db") as con:
+        try:
+            cur = con.cursor()
+            cur.execute("PRAGMA foreign_keys = ON;")
+            cur.execute("DELETE FROM Api WHERE user_id = ?",(user_id,))
+            con.commit()
+            print("Deleted Token")
+            return True
+        except Exception as e:
+            print("API Deletion error : "+str(e))
+            return False
+
+def get_token(user_id=None):
     with sqlite3.connect("data/instance.db") as con:
         cur = con.cursor()
-        cur.execute("SELECT token FROM Api WHERE user_id = ?",(user_id,))
-        token = cur.fetchone()
-        if(token):
-            return token[0]
+        if(user_id != None):
+            cur.execute("SELECT token FROM Api WHERE user_id = ?",(user_id,))
+            token = cur.fetchone()
+            if(token):
+                return token[0]
         else:
-            print("User has no active API tokens")
-            return None
+            cur.execute("SELECT user_id,token FROM Api WHERE user_id != 0")
+            tokens = cur.fetchall()
+            return tokens
+        print("User has no active API tokens")
+        return None
+
+def active_tokens():
+    tokenlist = [ list(x) for x in get_token()]
+    if(tokenlist == None):
+        return None
+    obj = dbm.users()
+    for i in tokenlist:
+        i.append(obj.username(i[0]))
+    return tokenlist
+
 
 def check_token(token):
     with sqlite3.connect("data/instance.db") as con:
@@ -68,10 +99,16 @@ def create_instance():
             with open("data/dbschema.sql", "r") as f:
                 con.executescript(f.read())
                 print("Database initialized successfully!")
+                print("Getting Secrets.....")
+                secrets = get_secrets()
+                if(secrets != None):
+                    adm_pwd = secrets["ADMIN_PWD"]
+                else:
+                    print("Secrets Missing..")
+                    exit()
                 setup["dbstat"] = True
                 cur = con.cursor()
-                # Implement setting alternate password through command line or env
-                cur.execute(f'''INSERT INTO Users VALUES (0,'admin@qm.com', '{hashpwd("admin")}', 'admin','admin','2005-1-1','admin')''')
+                cur.execute(f'''INSERT INTO Users VALUES (0,'admin@qm.com', '{hashpwd(adm_pwd)}', 'admin','admin','2005-1-1','admin')''')
                 con.commit()
                 print("Admin added with defaults.")
                 if(create_token(0)):

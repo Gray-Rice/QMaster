@@ -17,7 +17,14 @@ quest = dbm.questions()
 sco = dbm.score()
 
 app = Flask(__name__)
-app.secret_key = "secret_key_add_method_to_replace_with_env"
+print("Getting Secrets....")
+secrets = sec.get_secrets()
+if(secrets != None):
+    app.secret_key = secrets["SECRET_KEY"]
+else:
+    print("Secrets Missing Exiting.....")
+    exit()
+
 api = Api(app)
 
 # Flask-Login setup
@@ -71,14 +78,18 @@ def register():
     if request.method == "POST":
         # POST response
         user_data = [
-            request.form.get('username'),
-            request.form.get('password'),
-            request.form.get('fullname'),
-            request.form.get('qualification'),
+            request.form.get('username').strip(),
+            request.form.get('password').strip(),
+            request.form.get('fullname').strip(),
+            request.form.get('qualification').strip(),
             request.form.get('dob'),
         ]
-        status = uobj.add(user_data)
-        if(status):
+        if(not util.valid_mail(user_data[0])):
+            return render_template("register.html",message="Username Error: Not a valid mail")
+        for i in user_data:
+            if(i == ""):
+                return render_template("register.html",message="Input Error: Check if values entered are correct")
+        if(uobj.add(user_data)):
             flash("Registration sucessfully<br>Login to Proceed","info")
             return redirect("/login")
         else:
@@ -228,6 +239,31 @@ def search():
     else:
         return util.search(query,True)
 
+############################################################ API
+@app.route('/add/api',methods=["POST"])
+@login_required  
+def add_api():
+    if(current_user.role != "admin"):
+        return "Error unauthorised <a href=/user>Go Back</a>"
+    user_id = request.form.get("user_id")
+    if(sec.create_token(user_id)):
+        flash("API Token Created","info")
+    else:
+        flash("Error Creating Token","info")
+    return redirect(url_for("admin_api"))
+
+@app.route('/delete/api',methods=["POST"])
+@login_required  
+def del_api():
+    if(current_user.role != "admin"):
+        return "Error unauthorised <a href=/user>Go Back</a>"
+    user_id = request.form.get("user_id")
+    if(sec.rm_token(user_id)):
+        flash("API Token Deleted","info")
+    else:
+        flash("Error Deleting Token","info")
+    return redirect(url_for("admin_api"))
+
 ############################################################ Admin Paths
 @app.route('/admin/')
 @login_required  
@@ -235,6 +271,13 @@ def admin_dashboard():
     if(current_user.role != "admin"):
         return "Error unauthorised <a href=/user>Go Back</a>"
     return render_template("admin/dashboard.html",user="Admin")
+
+@app.route('/admin/api')
+@login_required  
+def admin_api():
+    if(current_user.role != "admin"):
+        return "Error unauthorised"
+    return render_template("admin/api.html",user="Admin",userlist=uobj.get(),admin_token=sec.get_token(0),tokenlist=sec.active_tokens())
 
 @app.route('/admin/user')
 @login_required  
@@ -274,23 +317,41 @@ def admin_chapter():
 
 
 ############################################################ User Management
-@app.route('/add/user/',methods=["GET","POST"])
+@app.route('/add/user/',methods=["POST"])
 @login_required  
 def add_user():
     user_data = [
-            request.form.get('username'),
-            request.form.get('password'),
-            request.form.get('fullname'),
-            request.form.get('qualification'),
+            request.form.get('username').strip(),
+            request.form.get('password').strip(),
+            request.form.get('fullname').strip(),
+            request.form.get('qualification').strip(),
             request.form.get('dob'),
         ]
-    status = uobj.add(user_data)
-    if(status):
+    if(not util.valid_mail(user_data[0])):
+        flash("Username Error: Not a valid mail","info")
+        return redirect(url_for("admin_user"))
+    for i in user_data:
+        if(i == ""):
+            flash("Input Error: Check if values entered are correct","info")
+            return redirect(url_for("admin_user"))
+    if(uobj.add(user_data)):
         flash("User added succesfully","info")
         return redirect(url_for("admin_user"))
     else:
         flash(f"Username {user_data[0]} already exist.","info")
         return redirect(url_for("admin_user"))
+
+@app.route('/delete/user/',methods=["POST"])
+@login_required 
+def del_user():
+    if(current_user.role != "admin"):
+            return "Error unauthorised <a href=/user>Go Back</a>"
+    user_id = request.form.get("user_id")
+    if(uobj.remove(user_id)):
+        flash("User removed","info")
+    else:
+        flash("Error Occured","info")
+    return redirect(url_for("admin_user"))
 
 ############################################################ Questions
 

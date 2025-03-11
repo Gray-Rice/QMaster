@@ -2,6 +2,10 @@ from flask import render_template,jsonify
 import modules.dbmanage as dbm
 from datetime import datetime
 from ast import literal_eval
+import re
+
+def valid_mail(mail):
+    return re.match(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', mail)
 
 class apitools():
     @staticmethod
