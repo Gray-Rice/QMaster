@@ -89,31 +89,47 @@ def register():
 
 class subject_api(Resource):
     def get(self):
+        token = request.headers.get("X-API-KEY")
+        if (not sec.check_token(token)):
+            return jsonify({"Error": "Unauthorized - Invalid or No API Key Provided"})
         subjects = apitools.get_sub()
-        if not subjects:
-            return jsonify({"error": "No subjects found"}), 404
-        return jsonify({"subjects": subjects})
+        if (subjects):
+            return jsonify({"Subjects": subjects})
+        return jsonify({"Error": "No subjects found"})
+        
 
 class chapter_api(Resource):
     def get(self):
+        token = request.headers.get("X-API-KEY")
+        if (not sec.check_token(token)):
+            return jsonify({"Error": "Unauthorized - Invalid or No API Key Provided"})
         chapters = apitools.get_chap()
-        if not chapters:
-            return jsonify({"error": "No chapters found"}), 404
-        return jsonify({"chapters": chapters})
+        if (chapters):
+            return jsonify({"Chapters": chapters})
+        return jsonify({"Error": "No chapters found"})
+        
 
 class quiz_api(Resource):
     def get(self):
+        token = request.headers.get("X-API-KEY")
+        if (not sec.check_token(token)):
+            return jsonify({"Error": "Unauthorized - Invalid or No API Key Provided"})
         quizzes = apitools.get_quiz()
-        if not quizzes:
-            return jsonify({"error": "No Quiz found"}), 404
-        return jsonify({"quizzes":quizzes})
+        if (quizzes):
+            return jsonify({"Quizzes":quizzes})
+        return jsonify({"Error": "No Quiz found"})
+        
 
 class score_api(Resource):
     def get(self):
+        token = request.headers.get("X-API-KEY")
+        if (not sec.check_token(token)):
+            return jsonify({"Error": "Unauthorized - Invalid or No API Key Provided"})
         scores = apitools.get_score()
-        if not scores:
-            return jsonify({"error": "No scoress found"}), 404
-        return jsonify({"scores": scores})
+        if (scores):
+            return jsonify({"scores": scores})
+        return jsonify({"Error": "No scoress found"})
+        
 
 api.add_resource(subject_api, "/api/subjects")
 api.add_resource(chapter_api, "/api/chapters")

@@ -3,11 +3,45 @@ import os
 import pickle
 import sqlite3
 from datetime import date
+import secrets
+
+def create_token(user_id):
+    with sqlite3.connect("data/instance.db") as con:
+        try:
+            token = secrets.token_hex(32)
+            cur = con.cursor()
+            cur.execute("INSERT INTO Api (user_id,token) VALUES (?,?)",(user_id,token))
+            con.commit()
+            print("Created API")
+            return True
+        except Exception as e:
+            print("API creation error : "+str(e))
+            return False
+
+def get_token(user_id):
+    with sqlite3.connect("data/instance.db") as con:
+        cur = con.cursor()
+        cur.execute("SELECT token FROM Api WHERE user_id = ?",(user_id,))
+        token = cur.fetchone()
+        if(token):
+            return token[0]
+        else:
+            print("User has no active API tokens")
+            return None
+
+def check_token(token):
+    with sqlite3.connect("data/instance.db") as con:
+        cur = con.cursor()
+        cur.execute("SELECT * FROM Api WHERE token = ? ",(token,))
+        api = cur.fetchone()
+        if(api):
+            print(f"API Authorized for user ID: {api[1]}")
+            return True
+        else:
+            return False
 
 def start_checkup():
     if(not setup_check()):
-        #c = input("No instance found or instance broken: Create New instance ? (y/n): ")
-        #if(c.lower() == "y"):
         print("Creating new instance....")
         create_instance()
     else:
@@ -30,16 +64,18 @@ def setup_check():
 def create_instance():
     setup = {"dbstat":False,"admin@qm.com":"admin","instDate":date.today() }
     try:
-        with sqlite3.connect("data/instance.db") as conn:
+        with sqlite3.connect("data/instance.db") as con:
             with open("data/dbschema.sql", "r") as f:
-                conn.executescript(f.read())
+                con.executescript(f.read())
                 print("Database initialized successfully!")
                 setup["dbstat"] = True
-                cursor = conn.cursor()
+                cur = con.cursor()
                 # Implement setting alternate password through command line or env
-                cursor.execute(f'''INSERT INTO Users VALUES (0,'admin@qm.com', '{hashpwd("admin")}', 'admin','admin','2005-1-1','admin')''')
-                conn.commit()
+                cur.execute(f'''INSERT INTO Users VALUES (0,'admin@qm.com', '{hashpwd("admin")}', 'admin','admin','2005-1-1','admin')''')
+                con.commit()
                 print("Admin added with defaults.")
+                if(create_token(0)):
+                    print("API Token for admin added Login to view")
             with open("data/admin_lock.pkl","wb") as lock:
                 pickle.dump(setup,lock)
     except FileNotFoundError:

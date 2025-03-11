@@ -2,8 +2,7 @@
 
 PRAGMA foreign_keys = ON;
 
-CREATE TABLE IF Users (
-    -- id and role are not necessary to insert everytime
+CREATE TABLE Users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     username TEXT NOT NULL UNIQUE,
     password TEXT NOT NULL,
@@ -14,7 +13,7 @@ CREATE TABLE IF Users (
 );
 
 
-CREATE TABLE IF Subjects (
+CREATE TABLE Subjects (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     code TEXT NOT NULL UNIQUE,
     name TEXT NOT NULL,
@@ -22,7 +21,7 @@ CREATE TABLE IF Subjects (
 );
 
 
-CREATE TABLE IF Chapters (
+CREATE TABLE Chapters (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     subject_id INTEGER NOT NULL,
     chap_code TEXT NOT NULL UNIQUE,
@@ -31,7 +30,7 @@ CREATE TABLE IF Chapters (
     FOREIGN KEY (subject_id) REFERENCES Subjects(id) ON DELETE CASCADE
 );
 
-CREATE TABLE IF Quiz (
+CREATE TABLE Quiz (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     chapter_id INTEGER NOT NULL,
     name TEXT NOT NULL,
@@ -42,7 +41,7 @@ CREATE TABLE IF Quiz (
     FOREIGN KEY (chapter_id) REFERENCES Chapters(id) ON DELETE CASCADE
 );
 
-CREATE TABLE IF Questions (
+CREATE TABLE Questions (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     quiz_id INTEGER NOT NULL,
     qstatement TEXT NOT NULL,
@@ -54,7 +53,7 @@ CREATE TABLE IF Questions (
     FOREIGN KEY (quiz_id) REFERENCES Quiz(id) ON DELETE CASCADE
 );
 
-CREATE TABLE IF Scores (
+CREATE TABLE Scores (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     quiz_id INTEGER NOT NULL,
     user_id INTEGER NOT NULL,
@@ -65,3 +64,9 @@ CREATE TABLE IF Scores (
     FOREIGN KEY (quiz_id) REFERENCES Quiz(id) ON DELETE CASCADE
 );
 
+CREATE TABLE Api (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER UNIQUE NOT NULL,
+    token TEXT UNIQUE NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES Users(id) ON DELETE CASCADE
+);
