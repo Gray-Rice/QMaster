@@ -1,0 +1,251 @@
+openapi: 3.0.0
+info:
+  title: Quiz Master API
+  description: API for fetching subjects, chapters, quizzes, and scores with API Key authentication.
+  version: "2.0"
+servers:
+  - url: http://localhost:5000
+    description: Quiz Master Server
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-KEY
+  schemas:
+    Subject:
+      type: object
+      properties:
+        id:
+          type: integer
+        code:
+          type: string
+        name:
+          type: string
+        decription:
+          type: string
+    Chapter:
+      type: object
+      properties:
+        id:
+          type: integer
+        code:
+          type: string
+        name:
+          type: string
+        decription:
+          type: string
+        subject:
+          type: string
+    Quiz:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        chapter:
+          type: string
+        subject:
+          type: string
+        decription:
+          type: string
+        duration:
+          type: string
+        start_date:
+          type: string
+          example: "YYYY-MM-DD HH:MM:SS"
+        end_date:
+          type: string
+          example: "YYYY-MM-DD HH:MM:SS"
+    Scores:
+      type: object
+      properties:
+        users:
+          type: object
+          properties:
+            scores:
+              type: object
+              properties:
+                id:
+                  type: integer
+                name:
+                  type: string
+                subject:
+                  type: string
+                chapter:
+                  type: string
+                score:
+                  type: integer
+                total:
+                  type: integer
+                incorrect:
+                  type: integer
+                unattempted:
+                  type: integer
+                time:
+                  type: string
+                  example: "YYYY-MM-DD HH:MM:SS"
+                report:
+                  type: object
+                  properties:
+                    questions:
+                      type: object
+                      properties:
+                        statement:
+                          type: string
+                        user_answer:
+                          type: string
+                        correct_answer:
+                          type: string
+                        result:
+                          type: boolean
+
+paths:
+  /api/subjects:
+    get:
+      summary: Fetch all subjects
+      security:
+        - ApiKeyAuth: []
+      responses:
+        "200":
+          description: List of subjects
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  Subjects:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Subject"
+        "401":
+          description: Invalid or No API Key
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  Error:
+                    type: string
+                    example: "Unauthorized - Invalid or No API Key Provided"
+        "204":
+          description: No subjects found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  Error:
+                    type: string
+                    example: "No subjects found"
+
+  /api/chapters:
+    get:
+      summary: Fetch all chapters
+      security:
+        - ApiKeyAuth: []
+      responses:
+        "200":
+          description: List of chapters
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  Chapters:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Chapter"
+        "401":
+          description: Invalid or No API Key
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  Error:
+                    type: string
+                    example: "Unauthorized - Invalid or No API Key Provided"
+        "204":
+          description: No chapters found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  Error:
+                    type: string
+                    example: "No chapters found"
+
+  /api/quizzes:
+    get:
+      summary: Fetch all quizzes
+      security:
+        - ApiKeyAuth: []
+      responses:
+        "200":
+          description: List of quizzes
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  Quizzes:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Quiz"
+        "401":
+          description: Invalid or No API Key
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  Error:
+                    type: string
+                    example: "Unauthorized - Invalid or No API Key Provided"
+        "204":
+          description: No quizzes found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  Error:
+                    type: string
+                    example: "No quizzes found"
+
+  /api/scores:
+    get:
+      summary: Fetch all scores
+      security:
+        - ApiKeyAuth: []
+      responses:
+        "200":
+          description: User scores
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Scores"
+        "401":
+          description: Invalid or No API Key
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  Error:
+                    type: string
+                    example: "Unauthorized - Invalid or No API Key Provided"
+        "204":
+          description: No scores found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  Error:
+                    type: string
+                    example: "No scores found"
+

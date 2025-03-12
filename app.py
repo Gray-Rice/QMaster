@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template, redirect, url_for, flash, jsonify, session
+from flask import Flask, request, render_template, redirect, url_for, flash, jsonify, session, Response
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from flask_restful import Resource, Api
 from ast import literal_eval
@@ -102,44 +102,44 @@ class subject_api(Resource):
     def get(self):
         token = request.headers.get("X-API-KEY")
         if (not sec.check_token(token)):
-            return jsonify({"Error": "Unauthorized - Invalid or No API Key Provided"})
+            return {"Error": "Unauthorized - Invalid or No API Key Provided"}, 401
         subjects = apitools.get_sub()
         if (subjects):
             return jsonify({"Subjects": subjects})
-        return jsonify({"Error": "No subjects found"})
+        return {"Error": "No subjects found"}, 204
         
 
 class chapter_api(Resource):
     def get(self):
         token = request.headers.get("X-API-KEY")
         if (not sec.check_token(token)):
-            return jsonify({"Error": "Unauthorized - Invalid or No API Key Provided"})
+            return {"Error": "Unauthorized - Invalid or No API Key Provided"}, 401
         chapters = apitools.get_chap()
         if (chapters):
             return jsonify({"Chapters": chapters})
-        return jsonify({"Error": "No chapters found"})
+        return {"Error": "No chapters found"}, 204
         
 
 class quiz_api(Resource):
     def get(self):
         token = request.headers.get("X-API-KEY")
         if (not sec.check_token(token)):
-            return jsonify({"Error": "Unauthorized - Invalid or No API Key Provided"})
+            return {"Error": "Unauthorized - Invalid or No API Key Provided"}, 401
         quizzes = apitools.get_quiz()
         if (quizzes):
             return jsonify({"Quizzes":quizzes})
-        return jsonify({"Error": "No Quiz found"})
+        return {"Error": "No Quiz found"}, 204
         
 
 class score_api(Resource):
     def get(self):
         token = request.headers.get("X-API-KEY")
         if (not sec.check_token(token)):
-            return jsonify({"Error": "Unauthorized - Invalid or No API Key Provided"})
+            return {"Error": "Unauthorized - Invalid or No API Key Provided"} ,401
         scores = apitools.get_score()
         if (scores):
             return jsonify({"scores": scores})
-        return jsonify({"Error": "No scoress found"})
+        return {"Error": "No scoress found"} ,204
         
 
 api.add_resource(subject_api, "/api/subjects")
@@ -150,6 +150,7 @@ api.add_resource(score_api, "/api/scores")
 
 ################################################################### Protected Routes
 
+######################################################### Scores
 @app.route('/user/report/<int:report_id>/')
 @login_required 
 def view_report(report_id):

@@ -3,4 +3,4 @@ data/admin_lock.pkl
 modules/__pycache__/
 docs/
 modtest.py
-api-test.sh
+report/
