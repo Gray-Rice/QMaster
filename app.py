@@ -179,7 +179,7 @@ def view_score():
             alist[key].append(temp)
     if(alist == []):
         alist=None
-    return render_template("score/attempts.html",alist=alist)
+    return render_template("score/attempts.html",alist=alist,user=session["user"]["fname"])
 
 @app.route('/score/save/<int:quiz_id>/',methods=['POST'])
 @login_required 
