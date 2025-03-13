@@ -167,7 +167,7 @@ class chapter:
         with sqlite3.connect("data/instance.db") as con:
             try:
                 cur = con.cursor()
-                cur.execute("PRAGMA foreign_keys = ON;") # To enable cascading on delete
+                cur.execute("PRAGMA foreign_keys = ON;")
                 cur.execute("DELETE FROM Chapters WHERE id = ?", (chap_id,))
                 con.commit()
                 print(f"Chapter '{chap_id}' deleted successfully.")
@@ -268,7 +268,6 @@ class questions:
 
     def get(self,quiz_id=None):
         with sqlite3.connect("data/instance.db") as con:
-            # try:
             cur = con.cursor()
             if(quiz_id != None):
                 cur.execute(f'''SELECT * FROM Questions WHERE quiz_id = ?''',(quiz_id,))

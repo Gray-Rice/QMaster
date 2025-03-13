@@ -31,7 +31,7 @@ api = Api(app)
 login_manager = LoginManager(app)
 login_manager.login_view = "login"
 
-# User class required for Flask Login (UserMixin is helper function), load_user creates User object, gives session identitity
+# User class required for Flask Login
 class User(UserMixin):
     def __init__(self, username,role):
         self.id = username
@@ -61,7 +61,7 @@ def login():
         if valid[0]:
             session["user"] = valid[1]
             user = load_user(username)
-            login_user(user) #actuall login
+            login_user(user)
             if (user.role == "admin"):
                 return redirect(url_for('admin_dashboard'))
             return redirect(url_for('user_dashboard'))
@@ -76,7 +76,6 @@ def login():
 @app.route("/register",methods=["POST","GET"])
 def register():
     if request.method == "POST":
-        # POST response
         user_data = [
             request.form.get('username').strip(),
             request.form.get('password').strip(),
@@ -367,7 +366,6 @@ def add_question():
         n = quest_d[1]
         quest_data = []
         for i in range (0,n):
-            # (quiz_id, qstatement, opt1,opt2,opt3,opt4,copt)
             temp = [ quiz_id,request.form.get(f'qstatement_{i}').strip().capitalize()]
             for j in range(0,4):
                 temp.append( request.form.get(f'opt{i}_{j}').strip().capitalize() )

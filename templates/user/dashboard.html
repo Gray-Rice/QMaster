@@ -34,7 +34,7 @@
         <!-- Quiz -->
         <div class="card mb-4 justify-content-center shadow-lg rounded-4 d-flex" style="margin:auto; max-width: 80vw;">
             <h3 class="mt-4" style="margin: auto;">Quizzes</h3>
-            <div class="justify-content-center" style="padding: 1%;">
+            <div class="card-body justify-content-center" style="padding: 1%;">
                 {% for q in quizlist %}
                 <details class="card mt-2 mb-2">
                     <summary>{{ q[2] }}</summary>
@@ -48,9 +48,9 @@
                         {% if q[7] %}
                         <a href="/user/quiz/{{ q[0] }}" class="mt-3 btn submit-btn">Goto Quiz</a><br>
                         {% else %}
-                        <p class="mt-3 mb-3 card text-center" style="max-width: 10vw;">Quiz not available</p>
+                        <p class="card-body mt-3 mb-3 card text-center" style="max-width: fit-content;">Quiz not available</p>
                         {% endif %}
-                        <a href="/user/scores/" class="mt-1 mb-3 btn submit-btn">See Scores</a>
+                        <a href="/user/scores/" class=" mt-1 mb-3 btn submit-btn">See Scores</a>
                     </div>
                 </details>
                 {% endfor %}
